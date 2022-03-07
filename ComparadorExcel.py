@@ -16,7 +16,7 @@ from tkinter import ttk,Label,messagebox,filedialog as fd
 root = tk.Tk()
 path1 = ""
 path2 = ""
-root.title('Comparador Excel (.xlsx)')
+root.title('Comparador Excel (.xlsx) V0.1')
 root.resizable(False, False)
 root.geometry('365x200')
 
@@ -25,7 +25,7 @@ def clicked():
         root.destroy()
 
 def myinfo():
-    messagebox.showinfo("Info","Autor: Rafael Henrique da Rosa\nEstagiário Itaipu Binacional - SMIN.DT 2022\n\
+    messagebox.showinfo("Info","Autor: Rafael Henrique da Rosa\nEstagiário Itaipu Binacional - SMIN.DT - Março de 2022\n\
 O algoritmo compara duas tabelas e mostra em uma planilha de resultado as linhas excluidas,novas e discrepantes")
 
 def select_file():
@@ -48,8 +48,7 @@ def select_file2():
     while(path2_.find("/") != -1):
        path2_ = path2_[1:]
     lbl2.configure(text=path2_)
-    
-  
+ 
 lbl4 = Label(root, text="")
 lbl4.configure(text="*A comparação pode demorar de acordo com o tamanho do banco")
 lbl4.grid(column=0, row=90)  
@@ -85,7 +84,8 @@ root.mainloop()
 
 ######################################################################################################################################################
 #PARTE DE COMPARAÇÃO
-
+    
+print(path2) 
 #Se não foram selecionados arquivos não inicia a parte da comparação
 if(path1 == "" or path2 == ""):
     exit() #Esse exit funciona porem gera um erro
@@ -96,13 +96,35 @@ vermelho = PatternFill(start_color='ff0000', end_color='ff0000', fill_type='soli
 cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
 vermelhoClaro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
 verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
-
+path3 = path1
+print(path3)
 #Abre os arquivos selecionados e seleciona o sheet ativo como o que será copiado
-banco1_obj = openpyxl.load_workbook(path1)
-banco2_obj = openpyxl.load_workbook(path2)
+
+#banco1_obj = openpyxl.load_workbook(path1)
+#banco2_obj = openpyxl.load_workbook(path2)
+
+try:
+    banco1_obj = openpyxl.load_workbook(path1)
+except:
+    try:
+        path1 = path1.replace("/", "\\")
+        banco1_obj = openpyxl.load_workbook(path1)
+    except:
+        print("ai realmente não ta abrindo o arquivo antigo")
+
+try:
+    banco2_obj = openpyxl.load_workbook(path2)
+except:
+    try:
+        path2 = path1.replace("/", "\\")
+        banco2_obj = openpyxl.load_workbook(path2)
+    except:
+        print("ai realmente não ta abrindo o arquivo novo")
+
+
+
 banco1Stheet_obj = banco1_obj.active
 banco2Stheet_obj = banco2_obj.active
- 
 
 #Tira o caminho e deixa só o nome dos arquivos selecionados
 while(path1.find("/") != -1):
@@ -191,7 +213,7 @@ for i, column_width in dims.items():
 ######################################################################################################################################################
 #Parte do resultado
 
-#Array para armazenar as linhas iguais encontradas e as discrepancias    
+#Array para armazenar as linhas iguais encontradas e as discr   epancias    
 encontrado = {}
 discrep = {}
 
