@@ -95,12 +95,9 @@ vermelho = PatternFill(start_color='ff0000', end_color='ff0000', fill_type='soli
 cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
 vermelhoClaro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
 verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
-path3 = path1
-print(path3)
-#Abre os arquivos selecionados e seleciona o sheet ativo como o que será copiado
 
-#banco1_obj = openpyxl.load_workbook(path1)
-#banco2_obj = openpyxl.load_workbook(path2)
+
+#Abre os arquivos selecionados e seleciona o sheet ativo como o que será copiado
 
 try:
     banco1_obj = openpyxl.load_workbook(path1)
@@ -119,8 +116,6 @@ except:
         banco2_obj = openpyxl.load_workbook(path2)
     except:
         print("ai realmente não ta abrindo o arquivo novo")
-
-
 
 banco1Stheet_obj = banco1_obj.active
 banco2Stheet_obj = banco2_obj.active
@@ -323,5 +318,6 @@ wb.save("output.xlsx")
 os.system("start EXCEL.EXE output.xlsx")
 
 #https://stackoverflow.com/questions/13197574/openpyxl-adjust-column-width-size
+
 
 
