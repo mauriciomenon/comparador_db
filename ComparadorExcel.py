@@ -18,7 +18,7 @@ path1 = ""
 path2 = ""
 root.title('Comparador Excel (.xlsx) V0.1')
 root.resizable(False, False)
-root.geometry('365x200')
+root.geometry('400x350')
 
 def clicked():
     if(path1 != "" and path2 != ""):
@@ -51,33 +51,29 @@ def select_file2():
  
 lbl4 = Label(root, text="")
 lbl4.configure(text="*A comparação pode demorar de acordo com o tamanho do banco")
-lbl4.grid(column=0, row=90)  
-  
-# open button
+lbl4.place(x=0, y =250,height = 50, width = 400)
+
 open_button = ttk.Button(root,text='Selecionar Banco antigo',command=select_file)
-open_button.grid(column=0, row=0)
+open_button.place(x=100, y = 10,height = 40, width = 200)
 lbl1 = Label(root, text="")
 lbl1.configure(text="")
-lbl1.grid(column=0, row=1)
+lbl1.place(x=100, y =50,height = 30, width = 200)
 
 open_button2 = ttk.Button(root,text='Selecionar Banco novo',command=select_file2)
-open_button2.grid(column=0, row=10)
+open_button2.place(x=100, y = 90,height = 40, width = 200)
 lbl2 = Label(root, text="")
 lbl2.configure(text="")
-lbl2.grid(column=0, row=30)
+lbl2.place(x=100, y = 130,height = 30, width = 200)
 
 open_button3 = ttk.Button(root,text='Iniciar',command=clicked)
-#open_button3.pack(expand=False)
-open_button3.grid(column=0, row=40)
+open_button3.place(x=150, y = 180,height = 30, width = 100)
 lbl3 = Label(root, text="")
-lbl3.configure(text="")
-lbl3.grid(column=0, row=60)  
+lbl3.configure(text="") 
+lbl3.place(x=100, y = 210,height = 30, width = 200)
 
-# open button
 open_button4 = tk.Button(root,text='?',command=myinfo)
-open_button4.config(height = 1,width = 1)
-#open_button3.pack(expand=False)
-open_button4.grid(column=0, row=100)
+open_button4.place(x=350, y = 300,height = 32, width = 32)
+
 
 # run the application
 root.mainloop()
@@ -318,6 +314,4 @@ wb.save("output.xlsx")
 os.system("start EXCEL.EXE output.xlsx")
 
 #https://stackoverflow.com/questions/13197574/openpyxl-adjust-column-width-size
-
-
 
