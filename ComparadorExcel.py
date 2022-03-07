@@ -85,7 +85,6 @@ root.mainloop()
 ######################################################################################################################################################
 #PARTE DE COMPARAÇÃO
     
-print(path2) 
 #Se não foram selecionados arquivos não inicia a parte da comparação
 if(path1 == "" or path2 == ""):
     exit() #Esse exit funciona porem gera um erro
@@ -324,4 +323,5 @@ wb.save("output.xlsx")
 os.system("start EXCEL.EXE output.xlsx")
 
 #https://stackoverflow.com/questions/13197574/openpyxl-adjust-column-width-size
+
 
