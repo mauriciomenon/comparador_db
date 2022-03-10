@@ -2,6 +2,11 @@
 #Autor: Rafael Henrique da Rosa
  
 
+#TO DO:
+    #comentar toda a parte da seleção de colunas
+    #fazer a busca por nome da coluna ao inves do indice
+    #verificar se marcar nenhum campo nas 3 seleçoes
+
 import openpyxl,math,os,sys
 from openpyxl.styles import PatternFill,Alignment,Font
 from openpyxl.utils import get_column_letter
@@ -17,9 +22,13 @@ str3=""
 #PARTE DE COMPARAÇÃO
       
 def compara(path_1, path_2):
+    #vetores com o numero das colunas de comparação
     col_comp_index = {}
-
+    #numeros de colunas para a comparação
     n_compara=0
+    
+    #transforma string em integer e adiciona ao vetor col_comp_index
+    #o caracter 'e' vem do corte da palavra "nenhum", que ocorre quando nenhum campo é escolhido
     if(str1!= "e"):
         col_comp_index[n_compara] = int(str1)
         n_compara+=1
@@ -133,7 +142,7 @@ def compara(path_1, path_2):
         sheet_resul.column_dimensions[get_column_letter(i+1)].width = int(math.ceil(column_width*1.42))
         
         
-    ######################################################################################################################################################
+    #################################################################################################################################################
     #Parte do resultado
     
     #Array para armazenar as linhas iguais encontradas e as discr   epancias    
@@ -158,13 +167,14 @@ def compara(path_1, path_2):
     for i in range(sheet_b1.max_row):
         for j in range(sheet_b2.max_row):
             flag_1 = 0
-            #Se os valores das colunas 3 e 4 são igais
+            #faz uma iteração em todos os indices que serão comparados
             for m in range(n_compara):
+                #se o campo marcado é diferente de "nenhum"
                 if(col_comp_index[m]!=0):
-                    
-                    #print(m)
+                    #para cada indice, compara as celulas no sheet_b1 e sheet_b2 adicionando 1 a uma flag
                     if(sheet_b1.cell(i+1,col_comp_index[m]).value == sheet_b2.cell(j+1,col_comp_index[m]).value):
                         flag_1+=1
+            #caso todas as colunas a serem comparadas sejam iguais nos dois sheets
             if(flag_1 == n_compara):
                 #marca a linha como encontrada nos dois bancos
                 encontrado[i] = j+1
@@ -175,7 +185,7 @@ def compara(path_1, path_2):
                         #muda a cor das discrepancias
                         sheet_b1.cell(i+1,l+1).fill = vermelho
                         sheet_b2.cell(j+1,l+1).fill = vermelho
-                        
+                        #pinta as celulas das colunas comparadas
                         for n in range(n_compara):
                             sheet_b1.cell(i+1,col_comp_index[n]).fill = vermelho
                             sheet_b2.cell(j+1,col_comp_index[n]).fill = vermelho
@@ -255,81 +265,104 @@ def compara(path_1, path_2):
    # sys.exit() 
     #https://stackoverflow.com/questions/13197574/openpyxl-adjust-column-width-size
     
-######################################################################################################################################################
+##################################################################################################################################################
 #PARTE TK
 
 
 path_1 = ""
 path_2 = ""
+#cria a janela principal, que não pode ser redimensionada 
 root = tk.Tk()
-root.title('Comparador Excel (.xlsx) V0.1.1')
+root.title('Comparador Excel (.xlsx) V0.1.2')
 root.resizable(False, False)
 root.geometry('400x350')
-   #tmp = variable.get()
+
+
+#valores padrão dos campos de seleção da comparação
 str1 = "3"
-   #tmp = variable_2.get()
 str2 = "4"
-   #tmp = variable_3.get()
 str3 = "e"
    
-
+#função acionada quando o botão iniciar é pressionado
 def clicked():
     if(path_1 != "" and path_2 != ""):
+        #tenta destruir a janela de seleção de comparação caso ela esteja aberta
         try:
             selecao_col.destroy()
         except:
             pass
-         
+        #inicia a comparação e destroi a janela principal 
         compara(path_1,path_2)
         root.destroy()
-      #  sys.exit() 
     else:
         messagebox.showinfo("ERRO","Selecione os arquivos")
         
-        
+#função acionada quando o botão de convirmar a seleção dos campos de comparação é pressionado        
 def confirma_selecao():
   #  selecao_col.destroy()
     if(path_1 != "" and path_2 != ""):
+        #destroi a janela de seleção
         selecao_col.destroy()
+        #exibe a janela principal
         root.deiconify()
         
+        #essas variáveis são globais pois são utilizadas em outras funções e na função principal de comparação
+        #TO DO: transformar em variáveis locais que são passadas a outras funções
         global variable
         global variable_2
         global variable_3
-        
+    
         global str1
         global str2
         global str3    
+        
+        #Coleta os valores dos campos de seleção
         tmp = variable.get()
         str1 = tmp[1]
         tmp = variable_2.get()
         str2 = tmp[1]
         tmp = variable_3.get()
         str3 = tmp[1]
-     #   compara(path_1,path_2)
     else:
         messagebox.showinfo("ERRO","Selecione os arquivos")
 
+#função acionada quando o botão  seleção dos campos de comparação é pressionado        
 def colselect():
     if(path_1 == "" or path_2 == ""):
        messagebox.showinfo("ERRO","Selecione os arquivos")
     else:
-        global str1
-        global str2
-        global str3 
+        #essas variáveis são globais pois são utilizadas em outras funções e na função principal de comparação
+        #TODO: transformar em variáveis locais que são passadas a outras funções
         global variable
         global variable_2
         global variable_3
         
+        global str1
+        global str2
+        global str3 
+        
+        #valores padrão
         str1 = banco1_sheet_obj.cell(1,3).value
         str2 = banco1_sheet_obj.cell(1,3).value
         str3 = "Nenhum"
         
+        #esconde a janela principal
         root.withdraw()
         global selecao_col
+        #inicia a janela de seleção
         selecao_col = tk.Tk()
+        
+        #informações da janela de seleção
+        selecao_col.title('Seleção de colunas para comparação')
+        selecao_col.resizable(False, False)
+        selecao_col.geometry('400x350')
+        
+        #array com o nome das colunas
         header = []
+        #adiciona a string "Nenhum no inicio do vetor para esta ser uma opção de seleção"
         header.append("Nenhum")
+        
+        #Percorre as colunas do sheet_b1 guardando no array header o indice e nome de cada coluna
         for i in range(banco1_sheet_obj.max_column):
             if(banco1_sheet_obj.cell(1,i+1).value == banco2_sheet_obj.cell(1,i+1).value):
                 str_tmp =''.join(banco1_sheet_obj.cell(1,i+1).value)
@@ -337,15 +370,10 @@ def colselect():
               #  print(str_tmp)
                 header.append(str_tmp)
             else:
+                #TODO: comparar as tabelas mesmo se tiverem colunas diferentes 
                 print("tabelas com colunas diferentes")    
 
-
-        selecao_col.title('Seleção de colunas para comparação')
-        selecao_col.resizable(False, False)
-        selecao_col.geometry('400x350')
-                
-
-        
+        #configuração da janela de seleção com 3 campos de seleção
         variable = tk.StringVar(selecao_col)
         variable.set(header[3])# default value
         variable_2 = tk.StringVar(selecao_col)
@@ -364,8 +392,7 @@ def colselect():
         botao_confirma_coluna = ttk.Button(selecao_col,text='Salvar',command=confirma_selecao)
         botao_confirma_coluna.place(x=150, y = 230,height = 30, width = 100)
 
-
-           
+        #Coleta os valores dos campos de seleção   
         tmp = variable.get()
         str1 = tmp[3]
         tmp = variable_2.get()
@@ -376,45 +403,67 @@ def colselect():
         selecao_col.mainloop()
 
 
-
-
+#função acionada quando o botão '?' é pressionado        
 def myinfo():
+    #mostra as informações do algoritmo
     messagebox.showinfo("Info","Autor: Rafael Henrique da Rosa\nEstagiário Itaipu Binacional - SMIN.DT - Março de 2022\n\
 O algoritmo compara duas tabelas e mostra em uma planilha de resultado as linhas excluidas,novas e discrepantes")
 
+
+#função acionada quando o botão 'selecionar banco antigo' é pressionado        
 def select_file():
     file_types = (('Excel Files', '*.xlsx'),('All files', '*.*'))
     file_name = fd.askopenfilename(title='Selecionar Banco antigo',filetypes=file_types)
+    
+    #essas variáveis são globais pois os woorkbooks são abertos aqui para pegar o nome das colunas
+        #porem são acessados na função de comparação
     global path_1
-    path_1 = file_name
     global banco1_obj
     global banco1_sheet_obj
+    
+    #str para manipulação do caminho
+    path_1 = file_name
+    
+    #tenta abrir o primeiro woorkbook de duas maneiras diferentes
     try:
        
         banco1_obj = openpyxl.load_workbook(path_1)
     except:
         try:
             path_1 = path_1.replace("/", "\\")
+            banco1_obj = openpyxl.load_workbook(path_1)
         except:
             print("ai realmente não ta abrindo o arquivo antigo")
-    banco1_obj = openpyxl.load_workbook(path_1)
+    
+    #carrega o sheet        
     banco1_sheet_obj = banco1_obj.active
-    global str1
-    global str2
-    global str3
+    
+    #Se não funcionar descomentar as 3 linhas da sequencia
+    #global str1
+    #global str2
+    #global str3
  
+    #manipulação do caminho do arquivo para label da janela principal
     path_1_ = path_1
     while(path_1_.find("/") != -1):
         path_1_ = path_1_[1:]
     lbl1.configure(text=path_1_)
-    
+
+#função acionada quando o botão 'selecionar banco novo' é pressionado            
 def select_file2():
     file_types = (('Excel Files', '*.xlsx'), ('All files', '*.*') )
     file_name = fd.askopenfilename(title='Selecionar Banco novo',filetypes=file_types)
+    
+    #essas variáveis são globais pois os woorkbooks são abertos aqui para pegar o nome das colunas
+        #porem são acessados na função de comparação
     global path_2
-    path_2 = file_name
     global banco2_obj
     global banco2_sheet_obj
+    
+    #str para manipulação do caminho
+    path_2 = file_name
+    
+    #tenta abrir o segundo woorkbook de duas maneiras diferentes
     try:
         banco2_obj = openpyxl.load_workbook(path_2)
     except:
@@ -423,14 +472,18 @@ def select_file2():
             banco2_obj = openpyxl.load_workbook(path_2)
         except:
             print("ai realmente não ta abrindo o arquivo novo")
-    banco2_obj = openpyxl.load_workbook(path_2)
+
+    #carrega o sheet        
     banco2_sheet_obj = banco2_obj.active
     
+    #manipulação do caminho do arquivo para label da janela principal
     path_2_ = path_2
     while(path_2_.find("/") != -1):
        path_2_ = path_2_[1:]
     lbl2.configure(text=path_2_)
- 
+
+
+#labels e botoes da janela principal    
 lbl4 = Label(root, text="")
 lbl4.configure(text="*A comparação pode demorar de acordo com o tamanho do banco")
 lbl4.place(x=0, y =250,height = 50, width = 400)
