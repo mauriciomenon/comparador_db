@@ -1,6 +1,9 @@
 # Python program to compare two excel files
 #Autor: Rafael Henrique da Rosa
  
+#O QUE DEFINE O PONTO SÃO OS DOIS PRIMEIROS CAMPOS
+
+
 
 #TO DO:
     #comentar toda a parte da seleção de colunas
@@ -29,18 +32,19 @@ def compara(path_1, path_2):
     
     #transforma string em integer e adiciona ao vetor col_comp_index
     #o caracter 'e' vem do corte da palavra "nenhum", que ocorre quando nenhum campo é escolhido
-    if(str1!= "e"):
-        col_comp_index[n_compara] = int(str1)
+    
+    if(str1[1]!= "e"):
+        col_comp_index[n_compara] = int(str1[1])
         n_compara+=1
     else:
         col_comp_index[n_compara] = 0
-    if(str2!= "e"):
-        col_comp_index[n_compara] = int(str2)
+    if(str2[1]!= "e"):
+        col_comp_index[n_compara] = int(str2[1])
         n_compara+=1
     else:
         col_comp_index[n_compara] = 0
-    if(str3!= "e"):
-        col_comp_index[n_compara] = int(str3)
+    if(str3[1]!= "e"):
+        col_comp_index[n_compara] = int(str3[1])
         n_compara+=1
     else:
         col_comp_index[n_compara] = 0
@@ -104,10 +108,10 @@ def compara(path_1, path_2):
           sheet_b2.cell(1,i+1).alignment = Alignment(horizontal='center')
           if(sheet_b1.cell(1,i+2).value == sheet_b2.cell(1,i+2).value):
               sheet_resul.cell(1,i+2).value = sheet_b1.cell(1,i+2).value
-          else:
+         # else:
               #Se o nome das colunas não sao iguais printa um erro e para o programa
-              print("NOME DAS COLUNAS NÃO SÃO IGUAIS")
-              sys.exit(0)
+          #    print("NOME DAS COLUNAS NÃO SÃO IGUAIS")
+           #   sys.exit(0)
           sheet_b2.cell(1,i+1).font = Font(bold= True)
           
     #Pinta a primeira linha do sheet 'Relatório' do output de cinza, alinha e deixa em negrito
@@ -154,7 +158,14 @@ def compara(path_1, path_2):
         encontrado[i] = 0
         discrep[i] = 0
     
-    
+    corresp = {}
+    for i in range(sheet_b2.max_column):
+        corresp[i] = 0    
+    for i in range(1,sheet_b2.max_column):
+        corresp[i] = 0
+        for j in range(1,sheet_b1.max_column):
+            if(sheet_b1.cell(1,i).value == sheet_b2.cell(1,j).value):
+                corresp[i] = j
         
     #k representa a linha que ta sendo escrita no sheet de relatorio
     k=3
@@ -172,15 +183,15 @@ def compara(path_1, path_2):
                 #se o campo marcado é diferente de "nenhum"
                 if(col_comp_index[m]!=0):
                     #para cada indice, compara as celulas no sheet_b1 e sheet_b2 adicionando 1 a uma flag
-                    if(sheet_b1.cell(i+1,col_comp_index[m]).value == sheet_b2.cell(j+1,col_comp_index[m]).value):
+                    if(sheet_b1.cell(i+1,col_comp_index[m]).value == sheet_b2.cell(j+1,corresp[col_comp_index[m]]).value):
                         flag_1+=1
             #caso todas as colunas a serem comparadas sejam iguais nos dois sheets
             if(flag_1 == n_compara):
                 #marca a linha como encontrada nos dois bancos
                 encontrado[i] = j+1
                 #checa se existem discrepancias percorrendo cada coluna da linha
-                for l in range(sheet_b1.max_column):
-                    if(sheet_b1.cell(i+1,l+1).value != sheet_b2.cell(j+1,l+1).value):
+                for l in range(sheet_b1.max_column -1):
+                    if(sheet_b1.cell(i+1,l+1).value != sheet_b2.cell(j+1,corresp[l+1]).value):
                         discrep[i] = j
                         #muda a cor das discrepancias
                         sheet_b1.cell(i+1,l+1).fill = vermelho
@@ -318,11 +329,11 @@ def confirma_selecao():
         
         #Coleta os valores dos campos de seleção
         tmp = variable.get()
-        str1 = tmp[1]
+        str1 = tmp
         tmp = variable_2.get()
-        str2 = tmp[1]
+        str2 = tmp
         tmp = variable_3.get()
-        str3 = tmp[1]
+        str3 = tmp
     else:
         messagebox.showinfo("ERRO","Selecione os arquivos")
 
@@ -342,9 +353,7 @@ def colselect():
         global str3 
         
         #valores padrão
-        str1 = banco1_sheet_obj.cell(1,3).value
-        str2 = banco1_sheet_obj.cell(1,3).value
-        str3 = "Nenhum"
+
         
         #esconde a janela principal
         root.withdraw()
@@ -369,17 +378,17 @@ def colselect():
                 str_tmp = "[" + (str)(i+1) + "] " + str_tmp
               #  print(str_tmp)
                 header.append(str_tmp)
-            else:
+         #   else:
                 #TODO: comparar as tabelas mesmo se tiverem colunas diferentes 
-                print("tabelas com colunas diferentes")    
+         #       print("tabelas com colunas diferentes")    
 
         #configuração da janela de seleção com 3 campos de seleção
         variable = tk.StringVar(selecao_col)
-        variable.set(header[3])# default value
+        variable.set(str1)# default value
         variable_2 = tk.StringVar(selecao_col)
-        variable_2.set(header[4]) # default value
+        variable_2.set(str2) # default value
         variable_3 = tk.StringVar(selecao_col)
-        variable_3.set(header[0]) # default value
+        variable_3.set(str3) # default value
         selecao_campo_1 = tk.OptionMenu(selecao_col, variable,*header)
         selecao_campo_1.place(x=100, y = 80,height = 30, width = 200)
         selecao_campo_2 = tk.OptionMenu(selecao_col, variable_2,*header)
@@ -394,12 +403,12 @@ def colselect():
 
         #Coleta os valores dos campos de seleção   
         tmp = variable.get()
-        str1 = tmp[3]
+        str1 = tmp
         tmp = variable_2.get()
-        str2 = tmp[4]
+        str2 = tmp
         tmp = variable_3.get()
-        str3 = tmp[1]
-        
+        str3 = tmp
+        selecao_col.protocol("WM_DELETE_WINDOW", close_colsel)
         selecao_col.mainloop()
 
 
@@ -448,6 +457,16 @@ def select_file():
     while(path_1_.find("/") != -1):
         path_1_ = path_1_[1:]
     lbl1.configure(text=path_1_)
+    global variable
+    global variable_2
+    global variable_3
+       
+    global str1
+    global str2
+    global str3 
+    str1 = "[3] "+ banco1_sheet_obj.cell(1,3).value
+    str2 = "[4] "+ banco1_sheet_obj.cell(1,4).value
+    str3 = "Nenhum"
 
 #função acionada quando o botão 'selecionar banco novo' é pressionado            
 def select_file2():
@@ -515,5 +534,16 @@ botao_selecao.place(x=50, y = 300,height = 32, width = 150)
 
 # run the application
 
+
+def close_root():
+    if messagebox.askokcancel("SAIR", "Deseja Sair?"):
+        root.destroy()
+        sys.exit()
+def close_colsel():
+    root.deiconify()
+    selecao_col.destroy()
+    
+
+root.protocol("WM_DELETE_WINDOW", close_root)
+
 root.mainloop()
-sys.exit() 
