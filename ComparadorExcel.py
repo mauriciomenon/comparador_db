@@ -2,9 +2,7 @@
 #Autor: Rafael Henrique da Rosa
  
 #O QUE DEFINE O PONTO SÃO OS DOIS PRIMEIROS CAMPOS
-
-
-
+#Para o caso de colunas em ordens diferentes deve segui a ordem da primeira ou segunda tabela no relatório??
 #TO DO:
     #comentar toda a parte da seleção de colunas
     #fazer a busca por nome da coluna ao inves do indice
@@ -60,7 +58,7 @@ def compara(path_1, path_2):
     cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
     vermelho_claro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
     verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
-    
+    laranja = PatternFill(start_color='ff8800', end_color='ff8800', fill_type='solid')
    
     #Tira o caminho e deixa só o nome dos arquivos selecionados
     while(path_1.find("/") != -1):
@@ -77,10 +75,10 @@ def compara(path_1, path_2):
     
     #Copia célula por celula dos arquivos selecionados para o arqvuivo de output
     #O Openyxl não possui metodo para copiar o sheet inteiro de uma vez
-    for row in banco1_sheet_obj:
+    for row in table1_sheet_obj:
         for cell in row:
             sheet_b1[cell.coordinate].value = cell.value
-    for row in banco2_sheet_obj:
+    for row in table2_sheet_obj:
         for cell in row:
             sheet_b2[cell.coordinate].value = cell.value
     
@@ -94,14 +92,14 @@ def compara(path_1, path_2):
     sheet_resul.freeze_panes = sheet_b2['A2']       
     
     
-    #Pinta a primeira linha do sheet 'banco1' do output de cinza, alinha e deixa em negrito
+    #Pinta a primeira linha do sheet 'table1' do output de cinza, alinha e deixa em negrito
     for rows in sheet_b1.iter_rows(min_row=1, max_row=1, min_col=1):
         for cell in rows:
           cell.fill = cinza
           cell.alignment = Alignment(horizontal='center')
           cell.font = Font(bold= True)
           
-    #Pinta a primeira linha do sheet 'banco2' do output de cinza, alinha e deixa em negrito
+    #Pinta a primeira linha do sheet 'table2' do output de cinza, alinha e deixa em negrito
     for rows in sheet_b2.iter_rows(min_row=1, max_row=1, min_col=1):
         for i in range(sheet_b2.max_column):
           sheet_b2.cell(1,i+1).fill = cinza
@@ -125,7 +123,7 @@ def compara(path_1, path_2):
           sheet_resul.cell(1,i+1).font = Font(bold= True)
      
     
-    #Ajusta o comprimento das colunas do sheet 'banco1'    
+    #Ajusta o comprimento das colunas do sheet 'table1'    
     dims = {}
     for row in sheet_b1.rows:
         for cell in row:
@@ -135,7 +133,7 @@ def compara(path_1, path_2):
     for i, column_width in dims.items():  # ,1 to start at 1
         sheet_b1.column_dimensions[get_column_letter(i)].width = int(math.ceil(column_width*1.42))
     
-    #Ajusta o comprimento das colunas do sheet 'banco2' e deixa o resultado igual o banco2        
+    #Ajusta o comprimento das colunas do sheet 'table2' e deixa o resultado igual o table2        
     for row in sheet_b2.rows:
         for cell in row:
             if cell.value:
@@ -169,12 +167,12 @@ def compara(path_1, path_2):
         
     #k representa a linha que ta sendo escrita no sheet de relatorio
     k=3
-    sheet_resul.cell(k,1).value = "LINHAS EXCLUIDAS (presentes no banco 1 e não no banco 2):"
+    sheet_resul.cell(k,1).value = "LINHAS EXCLUIDAS (presentes na tabela 1 e não na tabela 2):"
     k+=1
     
     #Linhas excluidas (presentes no banco 1 e não no banco 2):
 
-    #Percorre cada linha nos sheets banco1 e banco2       
+    #Percorre cada linha nos sheets table1 e table2       
     for i in range(sheet_b1.max_row):
         for j in range(sheet_b2.max_row):
             flag_1 = 0
@@ -204,7 +202,7 @@ def compara(path_1, path_2):
                 break
         #Se a linha não for encontrada    
         if(encontrado[i] == 0):
-           #Marca a linha como uma linha excluida no sheet banco1 e copia para o sheet de relatório
+           #Marca a linha como uma linha excluida no sheet table1 e copia para o sheet de relatório
            for l in range(sheet_b1.max_column-1):
                sheet_b1.cell(i+1,l+1).fill = vermelho_claro
                sheet_b1.cell(i+1,l+1).fill = vermelho_claro
@@ -245,11 +243,11 @@ def compara(path_1, path_2):
     k +=3
     
     
-    #Linhas Novas (presentes no banco 2 e não no banco 1):
+    #Linhas Novas (presentes na tabela 2 e não na tabela 1):
     
-    sheet_resul.cell(k,1).value = "LINHAS NOVAS (Presentes somente no Banco2):" 
+    sheet_resul.cell(k,1).value = "LINHAS NOVAS (Presentes somente no tabela nova):" 
     k +=1
-    for i in range(sheet_b2.max_row):
+    for i in range(sheet_b2.max_row-1):
         flag = 0
         for j in range(sheet_b1.max_row):
             if(i+1 == encontrado[j]):
@@ -372,9 +370,9 @@ def colselect():
         header.append("Nenhum")
         
         #Percorre as colunas do sheet_b1 guardando no array header o indice e nome de cada coluna
-        for i in range(banco1_sheet_obj.max_column):
-            if(banco1_sheet_obj.cell(1,i+1).value == banco2_sheet_obj.cell(1,i+1).value):
-                str_tmp =''.join(banco1_sheet_obj.cell(1,i+1).value)
+        for i in range(table1_sheet_obj.max_column):
+            if(table1_sheet_obj.cell(1,i+1).value == table2_sheet_obj.cell(1,i+1).value):
+                str_tmp =''.join(table1_sheet_obj.cell(1,i+1).value)
                 str_tmp = "[" + (str)(i+1) + "] " + str_tmp
               #  print(str_tmp)
                 header.append(str_tmp)
@@ -422,13 +420,13 @@ O algoritmo compara duas tabelas e mostra em uma planilha de resultado as linhas
 #função acionada quando o botão 'selecionar banco antigo' é pressionado        
 def select_file():
     file_types = (('Excel Files', '*.xlsx'),('All files', '*.*'))
-    file_name = fd.askopenfilename(title='Selecionar Banco antigo',filetypes=file_types)
+    file_name = fd.askopenfilename(title='Selecionar Tabela antiga',filetypes=file_types)
     
     #essas variáveis são globais pois os woorkbooks são abertos aqui para pegar o nome das colunas
         #porem são acessados na função de comparação
     global path_1
-    global banco1_obj
-    global banco1_sheet_obj
+    global table1_obj
+    global table1_sheet_obj
     
     #str para manipulação do caminho
     path_1 = file_name
@@ -436,16 +434,16 @@ def select_file():
     #tenta abrir o primeiro woorkbook de duas maneiras diferentes
     try:
        
-        banco1_obj = openpyxl.load_workbook(path_1)
+        table1_obj = openpyxl.load_workbook(path_1)
     except:
         try:
             path_1 = path_1.replace("/", "\\")
-            banco1_obj = openpyxl.load_workbook(path_1)
+            table1_obj = openpyxl.load_workbook(path_1)
         except:
             print("ai realmente não ta abrindo o arquivo antigo")
     
     #carrega o sheet        
-    banco1_sheet_obj = banco1_obj.active
+    table1_sheet_obj = table1_obj.active
     
     #Se não funcionar descomentar as 3 linhas da sequencia
     #global str1
@@ -464,36 +462,36 @@ def select_file():
     global str1
     global str2
     global str3 
-    str1 = "[3] "+ banco1_sheet_obj.cell(1,3).value
-    str2 = "[4] "+ banco1_sheet_obj.cell(1,4).value
+    str1 = "[1] "+ table1_sheet_obj.cell(1,1).value
+    str2 = "[2] "+ table1_sheet_obj.cell(1,2).value
     str3 = "Nenhum"
 
 #função acionada quando o botão 'selecionar banco novo' é pressionado            
 def select_file2():
     file_types = (('Excel Files', '*.xlsx'), ('All files', '*.*') )
-    file_name = fd.askopenfilename(title='Selecionar Banco novo',filetypes=file_types)
+    file_name = fd.askopenfilename(title='Selecionar tabela nova',filetypes=file_types)
     
     #essas variáveis são globais pois os woorkbooks são abertos aqui para pegar o nome das colunas
         #porem são acessados na função de comparação
     global path_2
-    global banco2_obj
-    global banco2_sheet_obj
+    global table2_obj
+    global table2_sheet_obj
     
     #str para manipulação do caminho
     path_2 = file_name
     
     #tenta abrir o segundo woorkbook de duas maneiras diferentes
     try:
-        banco2_obj = openpyxl.load_workbook(path_2)
+        table2_obj = openpyxl.load_workbook(path_2)
     except:
         try:
             path_2 = path_2.replace("/", "\\")
-            banco2_obj = openpyxl.load_workbook(path_2)
+            table2_obj = openpyxl.load_workbook(path_2)
         except:
             print("ai realmente não ta abrindo o arquivo novo")
 
     #carrega o sheet        
-    banco2_sheet_obj = banco2_obj.active
+    table2_sheet_obj = table2_obj.active
     
     #manipulação do caminho do arquivo para label da janela principal
     path_2_ = path_2
@@ -504,16 +502,16 @@ def select_file2():
 
 #labels e botoes da janela principal    
 lbl4 = Label(root, text="")
-lbl4.configure(text="*A comparação pode demorar de acordo com o tamanho do banco")
+lbl4.configure(text="*A comparação pode demorar de acordo com o tamanho das tabelas")
 lbl4.place(x=0, y =250,height = 50, width = 400)
 
-botao_banco_antigo = ttk.Button(root,text='Selecionar Banco antigo',command=select_file)
+botao_banco_antigo = ttk.Button(root,text='Selecionar Tabela antiga',command=select_file)
 botao_banco_antigo.place(x=100, y = 10,height = 40, width = 200)
 lbl1 = Label(root, text="")
 lbl1.configure(text="")
 lbl1.place(x=100, y =50,height = 30, width = 200)
 
-botao_banco_novo = ttk.Button(root,text='Selecionar Banco novo',command=select_file2)
+botao_banco_novo = ttk.Button(root,text='Selecionar Tabela nova',command=select_file2)
 botao_banco_novo.place(x=100, y = 90,height = 40, width = 200)
 lbl2 = Label(root, text="")
 lbl2.configure(text="")
