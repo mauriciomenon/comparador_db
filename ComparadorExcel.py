@@ -2,8 +2,7 @@
 #Autor: Rafael Henrique da Rosa
  
 #O QUE DEFINE O PONTO SÃO OS DOIS PRIMEIROS CAMPOS
-#Para o caso de colunas em ordens diferentes deve segui a ordem da primeira ou segunda tabela no relatório??
-#TO DO:
+#TODO:*
     #comentar toda a parte da seleção de colunas
     #fazer a busca por nome da coluna ao inves do indice
     #verificar se marcar nenhum campo nas 3 seleçoes
@@ -17,7 +16,7 @@ from tkinter import ttk,Label,messagebox,filedialog as fd
 
 str1=""
 str2=""
-str3="" 
+str3=""
 
 ######################################################################################################################################################
 #PARTE DE COMPARAÇÃO
@@ -58,7 +57,7 @@ def compara(path_1, path_2):
     cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
     vermelho_claro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
     verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
-    laranja = PatternFill(start_color='ff8800', end_color='ff8800', fill_type='solid')
+    #laranja = PatternFill(start_color='ff8800', end_color='ff8800', fill_type='solid')
    
     #Tira o caminho e deixa só o nome dos arquivos selecionados
     while(path_1.find("/") != -1):
@@ -68,56 +67,57 @@ def compara(path_1, path_2):
     
     #Cria um Workbook de output, cria dois sheets e  muda seus nomes para o nome dos arquivos selecionados
     wb = openpyxl.Workbook()
-    sheet_b1 = wb.active
-    sheet_b2 = wb.create_sheet()
-    sheet_b1.title = path_1
-    sheet_b2.title = path_2
+    sheet_t1 = wb.active
+    sheet_t2 = wb.create_sheet()
+    sheet_t1.title = path_1
+    sheet_t2.title = path_2
     
     #Copia célula por celula dos arquivos selecionados para o arqvuivo de output
     #O Openyxl não possui metodo para copiar o sheet inteiro de uma vez
     for row in table1_sheet_obj:
         for cell in row:
-            sheet_b1[cell.coordinate].value = cell.value
+            sheet_t1[cell.coordinate].value = cell.value
     for row in table2_sheet_obj:
         for cell in row:
-            sheet_b2[cell.coordinate].value = cell.value
+            sheet_t2[cell.coordinate].value = cell.value
     
     #cria um terceiro sheet no arquivo de output de relatório das ocorrencias        
     sheet_resul = wb.create_sheet()
     sheet_resul.title = "RELATÓRIO"
     
     #Deixa a primeira linha dos 3 sheets de output congelada para melhorar a visualização
-    sheet_b2.freeze_panes = sheet_b2['A2']
-    sheet_b1.freeze_panes = sheet_b2['A2']       
-    sheet_resul.freeze_panes = sheet_b2['A2']       
+    sheet_t2.freeze_panes = sheet_t2['A2']
+    sheet_t1.freeze_panes = sheet_t2['A2']       
+    sheet_resul.freeze_panes = sheet_t2['A2']       
     
     
     #Pinta a primeira linha do sheet 'table1' do output de cinza, alinha e deixa em negrito
-    for rows in sheet_b1.iter_rows(min_row=1, max_row=1, min_col=1):
+    for rows in sheet_t1.iter_rows(min_row=1, max_row=1, min_col=1):
         for cell in rows:
           cell.fill = cinza
           cell.alignment = Alignment(horizontal='center')
           cell.font = Font(bold= True)
           
     #Pinta a primeira linha do sheet 'table2' do output de cinza, alinha e deixa em negrito
-    for rows in sheet_b2.iter_rows(min_row=1, max_row=1, min_col=1):
-        for i in range(sheet_b2.max_column):
-          sheet_b2.cell(1,i+1).fill = cinza
-          sheet_b2.cell(1,i+1).alignment = Alignment(horizontal='center')
-          if(sheet_b1.cell(1,i+2).value == sheet_b2.cell(1,i+2).value):
-              sheet_resul.cell(1,i+2).value = sheet_b1.cell(1,i+2).value
+    for rows in sheet_t2.iter_rows(min_row=1, max_row=1, min_col=1):
+        for i in range(sheet_t2.max_column):
+          sheet_t2.cell(1,i+1).fill = cinza
+          sheet_t2.cell(1,i+1).alignment = Alignment(horizontal='center')
+      #    if(sheet_t1.cell(1,i+2).value == sheet_t2.cell(1,i+2).value):
+              
          # else:
               #Se o nome das colunas não sao iguais printa um erro e para o programa
           #    print("NOME DAS COLUNAS NÃO SÃO IGUAIS")
            #   sys.exit(0)
-          sheet_b2.cell(1,i+1).font = Font(bold= True)
+          sheet_t2.cell(1,i+1).font = Font(bold= True)
           
     #Pinta a primeira linha do sheet 'Relatório' do output de cinza, alinha e deixa em negrito
     #i+1 desloca as colunas 1 coluna para a direita para anexar uma coluna index no inicio do relatório
     #a coluna index mostra o numero da linha que foi copiada para o relatório      
     for rows in sheet_resul.iter_rows(min_row=1, max_row=1, min_col=1):
         sheet_resul.cell(1,1).value = "INDEX"
-        for i in range(sheet_resul.max_column):
+        for i in range(sheet_t2.max_column):
+          sheet_resul.cell(1,i+2).value = sheet_t2.cell(1,i+1).value
           sheet_resul.cell(1,i+1).fill = cinza
           sheet_resul.cell(1,i+1).alignment = Alignment(horizontal='center')
           sheet_resul.cell(1,i+1).font = Font(bold= True)
@@ -125,22 +125,22 @@ def compara(path_1, path_2):
     
     #Ajusta o comprimento das colunas do sheet 'table1'    
     dims = {}
-    for row in sheet_b1.rows:
+    for row in sheet_t1.rows:
         for cell in row:
             if cell.value:
                 dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))    
        
     for i, column_width in dims.items():  # ,1 to start at 1
-        sheet_b1.column_dimensions[get_column_letter(i)].width = int(math.ceil(column_width*1.42))
+        sheet_t1.column_dimensions[get_column_letter(i)].width = int(math.ceil(column_width*1.42))
     
     #Ajusta o comprimento das colunas do sheet 'table2' e deixa o resultado igual o table2        
-    for row in sheet_b2.rows:
+    for row in sheet_t2.rows:
         for cell in row:
             if cell.value:
                 dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))    
     
     for i, column_width in dims.items():
-        sheet_b2.column_dimensions[get_column_letter(i)].width = int(math.ceil(column_width*1.42))
+        sheet_t2.column_dimensions[get_column_letter(i)].width = int(math.ceil(column_width*1.42))
         sheet_resul.column_dimensions[get_column_letter(i+1)].width = int(math.ceil(column_width*1.42))
         
         
@@ -152,19 +152,19 @@ def compara(path_1, path_2):
     discrep = {}
     
     #Zera os arrays anteriores (Poderia utilizar outra lógica para evitar)
-    for i in range(sheet_b1.max_row):
+    for i in range(sheet_t1.max_row):
         encontrado[i] = 0
         discrep[i] = 0
     
     corresp = {}
-    for i in range(sheet_b2.max_column):
+    for i in range(sheet_t2.max_column):
         corresp[i] = 0    
-    for i in range(1,sheet_b2.max_column):
+    for i in range(1,sheet_t2.max_column):
         corresp[i] = 0
-        for j in range(1,sheet_b1.max_column):
-            if(sheet_b1.cell(1,i).value == sheet_b2.cell(1,j).value):
+        for j in range(1,sheet_t1.max_column):
+            if(sheet_t1.cell(1,i).value == sheet_t2.cell(1,j).value):
                 corresp[i] = j
-        
+  
     #k representa a linha que ta sendo escrita no sheet de relatorio
     k=3
     sheet_resul.cell(k,1).value = "LINHAS EXCLUIDAS (presentes na tabela 1 e não na tabela 2):"
@@ -173,40 +173,40 @@ def compara(path_1, path_2):
     #Linhas excluidas (presentes no banco 1 e não no banco 2):
 
     #Percorre cada linha nos sheets table1 e table2       
-    for i in range(sheet_b1.max_row):
-        for j in range(sheet_b2.max_row):
+    for i in range(sheet_t1.max_row):
+        for j in range(sheet_t2.max_row):
             flag_1 = 0
             #faz uma iteração em todos os indices que serão comparados
             for m in range(n_compara):
                 #se o campo marcado é diferente de "nenhum"
                 if(col_comp_index[m]!=0):
-                    #para cada indice, compara as celulas no sheet_b1 e sheet_b2 adicionando 1 a uma flag
-                    if(sheet_b1.cell(i+1,col_comp_index[m]).value == sheet_b2.cell(j+1,corresp[col_comp_index[m]]).value):
+                    #para cada indice, compara as celulas no sheet_t1 e sheet_t2 adicionando 1 a uma flag
+                    if(sheet_t1.cell(i+1,col_comp_index[m]).value == sheet_t2.cell(j+1,corresp[col_comp_index[m]]).value):
                         flag_1+=1
             #caso todas as colunas a serem comparadas sejam iguais nos dois sheets
             if(flag_1 == n_compara):
                 #marca a linha como encontrada nos dois bancos
                 encontrado[i] = j+1
                 #checa se existem discrepancias percorrendo cada coluna da linha
-                for l in range(sheet_b1.max_column -1):
-                    if(sheet_b1.cell(i+1,l+1).value != sheet_b2.cell(j+1,corresp[l+1]).value):
+                for l in range(sheet_t1.max_column -1):
+                    if(sheet_t1.cell(i+1,l+1).value != sheet_t2.cell(j+1,corresp[l+1]).value):
                         discrep[i] = j
                         #muda a cor das discrepancias
-                        sheet_b1.cell(i+1,l+1).fill = vermelho
-                        sheet_b2.cell(j+1,l+1).fill = vermelho
+                        sheet_t1.cell(i+1,l+1).fill = vermelho
+                        sheet_t2.cell(j+1,l+1).fill = vermelho
                         #pinta as celulas das colunas comparadas
                         for n in range(n_compara):
-                            sheet_b1.cell(i+1,col_comp_index[n]).fill = vermelho
-                            sheet_b2.cell(j+1,col_comp_index[n]).fill = vermelho
+                            sheet_t1.cell(i+1,col_comp_index[n]).fill = vermelho
+                            sheet_t2.cell(j+1,col_comp_index[n]).fill = vermelho
                         
                 break
         #Se a linha não for encontrada    
         if(encontrado[i] == 0):
            #Marca a linha como uma linha excluida no sheet table1 e copia para o sheet de relatório
-           for l in range(sheet_b1.max_column-1):
-               sheet_b1.cell(i+1,l+1).fill = vermelho_claro
-               sheet_b1.cell(i+1,l+1).fill = vermelho_claro
-               sheet_resul.cell(k,l+1+1).value = sheet_b1.cell(i+1,l+1).value
+           for l in range(sheet_t1.max_column-1):
+               sheet_t1.cell(i+1,l+1).fill = vermelho_claro
+               sheet_t1.cell(i+1,l+1).fill = vermelho_claro
+               sheet_resul.cell(k,l+1+1).value = sheet_t1.cell(i+1,l+1).value
                sheet_resul.cell(k,l+1).fill = vermelho_claro
                sheet_resul.cell(k,l+1).border = borda_fina
                sheet_resul.cell(k, 1).value = i+1
@@ -219,7 +219,7 @@ def compara(path_1, path_2):
     k+=2
     sheet_resul.cell(k,1).value = "LINHAS DISCREPANTES:"
     k+=1
-    for i in range(sheet_b1.max_row):
+    for i in range(sheet_t1.max_row):
         if(discrep[i] !=0):
             sheet_resul.cell(k,1).value = path_1
             sheet_resul.cell(k+2,1).value = path_2
@@ -231,10 +231,10 @@ def compara(path_1, path_2):
             sheet_resul.cell(k+2, 1).font = Font(bold= True)
             sheet_resul.cell(k+2, 1).fill = cinza
             sheet_resul.cell(k,l+1+1).fill = vermelho
-            for l in range(sheet_b1.max_column-1):
-               sheet_resul.cell(k,l+1+1).value = sheet_b1.cell(i+1,l+1).value
+            for l in range(sheet_t1.max_column-1):
+               sheet_resul.cell(k,l+1+1).value = sheet_t1.cell(i+1,corresp[l+1]).value
                sheet_resul.cell(k,l+1).border = borda_fina
-               sheet_resul.cell(k+2,l+1+1).value = sheet_b2.cell(discrep[i]+1,l+1).value
+               sheet_resul.cell(k+2,l+1+1).value = sheet_t2.cell(discrep[i]+1,l+1).value
                sheet_resul.cell(k+2,l+1).border = borda_fina
                if(sheet_resul.cell(k,l+1+1).value != sheet_resul.cell(k+2,l+1+1).value):
                    sheet_resul.cell(k,l+1+1).fill = vermelho
@@ -247,19 +247,19 @@ def compara(path_1, path_2):
     
     sheet_resul.cell(k,1).value = "LINHAS NOVAS (Presentes somente no tabela nova):" 
     k +=1
-    for i in range(sheet_b2.max_row-1):
+    for i in range(sheet_t2.max_row-1):
         flag = 0
-        for j in range(sheet_b1.max_row):
+        for j in range(sheet_t1.max_row):
             if(i+1 == encontrado[j]):
                 flag = 1
                 break
         if(flag==0):
-            for l in range(sheet_b2.max_column-1):
-                sheet_resul.cell(k,l+1+1).value = sheet_b2.cell(i+1,l+1).value
+            for l in range(sheet_t2.max_column-1):
+                sheet_resul.cell(k,l+1+1).value = sheet_t2.cell(i+1,l+1).value
                 sheet_resul.cell(k,l+1).border = borda_fina
                 sheet_resul.cell(k,l+1).fill = verde
-                sheet_b2.cell(i+1,l+1).fill = verde
-                sheet_b2.cell(i+1,l+1).fill = verde
+                sheet_t2.cell(i+1,l+1).fill = verde
+                sheet_t2.cell(i+1,l+1).fill = verde
             sheet_resul.cell(k, 1).value = i+1
             sheet_resul.cell(k, 1).font = Font(bold= True)
             sheet_resul.cell(k, 1).fill = cinza
@@ -341,7 +341,7 @@ def colselect():
        messagebox.showinfo("ERRO","Selecione os arquivos")
     else:
         #essas variáveis são globais pois são utilizadas em outras funções e na função principal de comparação
-        #TODO: transformar em variáveis locais que são passadas a outras funções
+        #TO DO: transformar em variáveis locais que são passadas a outras funções
         global variable
         global variable_2
         global variable_3
@@ -369,7 +369,7 @@ def colselect():
         #adiciona a string "Nenhum no inicio do vetor para esta ser uma opção de seleção"
         header.append("Nenhum")
         
-        #Percorre as colunas do sheet_b1 guardando no array header o indice e nome de cada coluna
+        #Percorre as colunas do sheet_t1 guardando no array header o indice e nome de cada coluna
         for i in range(table1_sheet_obj.max_column):
             if(table1_sheet_obj.cell(1,i+1).value == table2_sheet_obj.cell(1,i+1).value):
                 str_tmp =''.join(table1_sheet_obj.cell(1,i+1).value)
@@ -377,7 +377,7 @@ def colselect():
               #  print(str_tmp)
                 header.append(str_tmp)
          #   else:
-                #TODO: comparar as tabelas mesmo se tiverem colunas diferentes 
+                #TO DO: comparar as tabelas mesmo se tiverem colunas diferentes 
          #       print("tabelas com colunas diferentes")    
 
         #configuração da janela de seleção com 3 campos de seleção
