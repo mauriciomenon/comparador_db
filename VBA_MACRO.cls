@@ -21,7 +21,7 @@ mySheet = "BlankSheet" & Int(2 + Rnd * (300 - 2 + 1))
 Sheets.Add
 ActiveSheet.Name = mySheet
 
-'Exclui todos os sheets que n„o s„o o criado anteriormente
+'Exclui todos os sheets que n√£o s√£o o criado anteriormente
 Application.DisplayAlerts = False
 For Each sh In ThisWorkbook.Worksheets
     If sh.Name <> mySheet Then
@@ -98,7 +98,7 @@ ActiveWindow.FreezePanes = True
 
 'Worksheets(b1.Name).Activate
 
-'Exclui todos os sheets que n„o s„o os dois copiados
+'Exclui todos os sheets que n√£o s√£o os dois copiados
 Application.DisplayAlerts = False
 For Each sh In ThisWorkbook.Worksheets
     If sh.Name <> b1.Name And sh.Name <> b2.Name Then
@@ -113,7 +113,7 @@ b2.Close True
 Application.DisplayAlerts = True
 Dim PNTNAM1, SUBNAM1, PNTNAM2, SUBNAM2 As String
 Sheets.Add After:=Sheets(Sheets.Count)
-ActiveSheet.Name = "RELAT”RIO"
+ActiveSheet.Name = "RELAT√ìRIO"
 
 
 For i = 1 To LC2 Step 1
@@ -152,7 +152,7 @@ For i = 1 To LR2 Step 1
 Next i
 m = 0
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'PARTE DA COMPARA«√O
+'PARTE DA COMPARA√á√ÉO
 For i = 2 To LR2 Step 1
 
 SUBNAM2 = ThisWorkbook.Sheets(2).Cells(i, 3).Text
@@ -192,13 +192,13 @@ Next i
 
 
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'PARTE DO RELAT”RIO
+'PARTE DO RELAT√ìRIO
 
 '--------------------------------------
 'FAZ A PARTE DE LINHAS EXCLUIDAS
 'ThisWorkbook.Sheet(3).Activate
 
-Sheets(3).Cells(3, 1).Value = "LINHAS EXCLUÕDAS (Presentes no banco 1 e n„o no 2):"
+Sheets(3).Cells(3, 1).Value = "LINHAS EXCLU√çDAS (Presentes no banco 1 e n√£o no 2):"
 Sheets(3).Range("A3:EF3").Font.Size = 20
 Sheets(3).Range("A3:EF3").Merge
 
