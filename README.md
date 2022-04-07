@@ -1,4 +1,4 @@
-# ComparadorExcel
+# Comparador
 
 Algoritmo que compara duas tabelas no excel com base nas colunas selecionadas (padrão: 1 e 2) e cria um arquivo .xlsx contendo: <br />
 Linhas excluídas da primeira tabela;<br />
