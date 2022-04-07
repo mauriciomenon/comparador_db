@@ -1,12 +1,15 @@
 import subprocess
 import pandas as pd
-import os
+import os,sys
 import tkinter as tk
-from tkinter.messagebox import showinfo
-from tkinter import ttk,Label,messagebox,filedialog as fd
+from tkinter import ttk,messagebox,filedialog as fd
 from pandastable import Table
 from pandastable import config
 
+global path1
+global path2
+path1 = ''
+path2 = ''
 def compara():
     
         
@@ -124,6 +127,11 @@ def compara():
 ########################################################################################
 ########################################################################################
 
+def close_root():
+    if messagebox.askokcancel("SAIR", "Deseja Sair?"):
+        root.destroy()
+        sys.exit()
+        
 df = pd.DataFrame({
     'A': ['','','','','','',],
     'B': ['','','','','','',],
@@ -182,7 +190,10 @@ def select_file():
     file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
     file_name = fd.askopenfilename(title='Selecionar Banco antigo',filetypes=file_types)
     global path1
+    global path2
     path1 = file_name
+    if(path1 != "" and path2 != ""):
+        select_table()
 #    lbl1.configure(text=file_name)
     
 def select_file2():
@@ -210,7 +221,7 @@ menubar = tk.Menu(root)
 filemenu = tk.Menu(menubar,tearoff=0)
 filemenu.add_command(label="ABRIR ARQUIVO ANTIGO",command=select_file)
 filemenu.add_command(label="ABRIR ARQUIVO NOVO",command=select_file2)
-filemenu.add_command(label="SAIR")
+filemenu.add_command(label="SAIR",command=close_root)
 helpmenu = tk.Menu(menubar,tearoff=0)
 helpmenu.add_command(label="Como usar")
 helpmenu.add_command(label="Sobre o programa")
@@ -332,4 +343,8 @@ pt_resul_excluidas.show()
 pt_resul_excluidas.redraw()
 
 
+
+
+
+root.protocol("WM_DELETE_WINDOW", close_root)
 root.mainloop()
