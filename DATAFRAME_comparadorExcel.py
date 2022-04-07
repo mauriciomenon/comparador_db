@@ -186,14 +186,12 @@ def compara(path_1, path_2):
         
     
     #NO DATAFRAME
-    for j in range(table1.shape[0]):
-        flag =0
-        for i in range(table2.shape[0]):
-            if(table1.iat[j,0] == table2.iat[i,0] and table1.iat[j,1] == table2.iat[i,1] ):
-                flag = 1
-        if(flag ==0):
-            table_excluidas = table_excluidas.append(table1.iloc[j])
-        
+
+    table_excluidas = table1[~table1.set_index(['RTUNO','PNTNO']).index.isin(table2.set_index(['RTUNO','PNTNO']).index)]
+
+
+    
+    
     #Percorre cada linha nos sheets table1 e table2       
     for i in range(sheet_t1.max_row):
         for j in range(sheet_t2.max_row):
@@ -241,29 +239,61 @@ def compara(path_1, path_2):
         
         
     #NO DATAFRAME: 
-    i=0
-    o=0
-    for i in range(table2.shape[0]):
-        for j in range(table1.shape[0]):
-            if(table1.iat[j,0] == table2.iat[i,0] and table1.iat[j,1] == table2.iat[i,1] ):
-                for o in range(table1.shape[1]):
-                    temp1 = str(table1.iat[j,o])
-                    if temp1.endswith('.0'):
-                        print("here1")
-                        temp1 = temp1.removesuffix('.0')
-                        print("temp1 = " +temp1)
-                    temp2 = str(table2.iat[i,o])
-                    if temp2.endswith('.0'):
-                        print("here2")
-                        temp2 = temp2.removesuffix('.0')
-                        print("temp2 = "+ temp2)
-                    if(temp1 != temp2):
-                        print(j,temp1,i,temp2,o)
-                        table_discrep = table_discrep.append(table1.iloc[j])
-                        table_discrep = table_discrep.append(table2.iloc[i])
-                        break
-    global datatest
+# =============================================================================
+#     i=0
+#     o=0
+#     for i in range(table2.shape[0]):
+#         for j in range(table1.shape[0]):
+#             if(table1.iat[j,0] == table2.iat[i,0] and table1.iat[j,1] == table2.iat[i,1] ):
+#                 for o in range(table1.shape[1]):
+#                     temp1 = str(table1.iat[j,o])
+#                     if temp1.endswith('.0'):
+#                         temp1 = temp1.removesuffix('.0')
+#                     temp2 = str(table2.iat[i,o])
+#                     if temp2.endswith('.0'):
+#                         temp2 = temp2.removesuffix('.0')
+#                     if(temp1 != temp2):
+#                         table_discrep = pd.concat([table_discrep,table1.iloc[[j]]],ignore_index = False)
+#                         table_discrep = pd.concat([table_discrep,table2.iloc[[i]]],ignore_index = False)
+#                         break
+# =============================================================================
+    global table_aux
+    global table_discrep1
+    global table_discrep2
 
+    table_discrep1 = table1[table1.set_index(['RTUNO','PNTNO']).index.isin(table2.set_index(['RTUNO','PNTNO']).index)]
+    table_aux = table_discrep1
+    
+    for col in table1.columns:
+        if(col != 'RTUNO' and col!= 'PNTNO'):
+            col_test = ['RTUNO','PNTNO']
+            col_test.append(col)
+            table_aux = table_aux[table_aux.set_index(col_test).index.isin(table2.set_index(col_test).index)]
+
+    table_discrep1 = table_discrep1[~table_discrep1.set_index(['RTUNO','PNTNO']).index.isin(table_aux.set_index(['RTUNO','PNTNO']).index)]
+
+
+
+    table_discrep2 = table2[table2.set_index(['RTUNO','PNTNO']).index.isin(table1.set_index(['RTUNO','PNTNO']).index)]
+    table_aux = table_discrep2
+
+    for col in table2.columns:
+        if(col != 'RTUNO' and col!= 'PNTNO'):
+            col_test = ['RTUNO','PNTNO']
+            col_test.append(col)
+            table_aux = table_aux[table_aux.set_index(col_test).index.isin(table1.set_index(col_test).index)]
+
+    table_discrep2 = table_discrep2[~table_discrep2.set_index(['RTUNO','PNTNO']).index.isin(table_aux.set_index(['RTUNO','PNTNO']).index)]
+
+
+    if(table_discrep1.shape[0] == table_discrep2.shape[0]):
+        for i in range(table_discrep2.shape[0]):
+            table_discrep = pd.concat([table_discrep,table_discrep1.iloc[[i]]],ignore_index = False)  
+            table_discrep = pd.concat([table_discrep,table_discrep2.iloc[[i]]],ignore_index = False)  
+    else:
+        print("ACONTECEU ALGUMA COISA ERRADA NA PARTE DAS LINHAS DISCREPANTES")
+    
+    table_discrep.insert(loc=0, column='test', value=table_discrep.index.values)
     i=0    
     k+=2
     sheet_resul.cell(k,1).value = "LINHAS DISCREPANTES:"
@@ -296,16 +326,8 @@ def compara(path_1, path_2):
     
             
     #NO DATAFRAME: 
-    i=0
+    table_novas = table2[~table2.set_index(['RTUNO','PNTNO']).index.isin(table1.set_index(['RTUNO','PNTNO']).index)]
 
-    for i in range(table2.shape[0]):
-        flag =0
-        for j in range(table1.shape[0]):
-            if(table1.iat[j,0] == table2.iat[i,0] and table1.iat[j,1] == table2.iat[i,1] ):
-                flag = 1
-        if(flag ==0):
-
-            table_novas = table_novas.append(table2.iloc[i])
     
     
     
