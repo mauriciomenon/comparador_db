@@ -143,6 +143,7 @@ def myinfo():
     str_info += "->Fazer uma progressbar para diferenciar quando o programa travou\n"
     str_info += "->Indicar quantas ocorrencias na label\n"
     str_info += "->Conferir se os arquivos selecionados são access\n"
+    str_info += "->fazer funcionar com xlsx\n"
     # str_info += ""
     # str_info += ""
     # str_info += ""
@@ -214,15 +215,6 @@ def select_table():
 
 #################################################################################################
 
-def select_file():
-    file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
-    file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO ANTIGO',filetypes=file_types)
-    global path1
-    global path2
-    path1 = file_name
-    if(path1 != "" and path2 != ""):
-        select_table()
-    
 def select_file2():
     file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
     file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO NOVO',filetypes=file_types)
@@ -231,6 +223,15 @@ def select_file2():
     path2 = file_name
     if(path1 != "" and path2 != ""):
         select_table()
+
+def select_file():
+    file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
+    file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO ANTIGO',filetypes=file_types)
+    global path1
+    global path2
+    path1 = file_name
+    select_file2()
+    
 
 def select_file_export_Antiga():
     global selected_table
@@ -327,15 +328,11 @@ def select_file_export_Complet():
         multiple_dfs(dfs, 'RELATÓRIO',file_path, 3)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
-        
-        
-        str_temp = "start EXCEL.EXE " + file_path
-        os.system(str_temp)    
+            
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar,tearoff=0)
-filemenu.add_command(label="ABRIR ARQUIVO ANTIGO",command=select_file)
-filemenu.add_command(label="ABRIR ARQUIVO NOVO",command=select_file2)
+filemenu.add_command(label="SELECIONAR ARQUIVO ACCESS",command=select_file)
 filemenu.add_command(label="SAIR",command=close_root)
 helpmenu = tk.Menu(menubar,tearoff=0)
 helpmenu.add_command(label="Como usar")
@@ -447,7 +444,7 @@ options = {
  'cellbackgr': '#98faa7',
  'rowselectedcolor': '#98faa7',
  #'colheadercolor': '#f71616',
-
+ 'gridcolor': 'black',
  'textcolor': 'black'}
 config.apply_options(options, pt_resul_excluidas)
 pt_resul_excluidas.autoResizeColumns()
