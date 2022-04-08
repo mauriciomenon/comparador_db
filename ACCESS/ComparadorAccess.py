@@ -10,6 +10,8 @@ global path1
 global path2
 path1 = ''
 path2 = ''
+selected_table = ""
+table1 = pd.DataFrame()
 def compara():
     
         
@@ -127,6 +129,31 @@ def compara():
 ########################################################################################
 ########################################################################################
 
+def myinfo():
+    #mostra as informações do algoritmo
+    str_info = "Autor: Rafael Henrique da Rosa\n"
+    str_info += "Estagiário Itaipu Binacional- SMIN.DT - Abril de 2022\n"
+    str_info += "O algoritmo compara duas tabelas em arquivos access e mostra as linhas "
+    str_info += "excluidas,novas e discrepantes"
+#TODO:*
+    str_info += "\nTODO:\n"
+    str_info += "->Fazer um pequeno tutorial na aba ajuda\n"
+    str_info += "->Arrumar as opções de exportar\n"
+    str_info += "->Fazer uma aba para selecionar o elemento de comparação\n"
+    str_info += "->Fazer uma progressbar para diferenciar quando o programa travou\n"
+    str_info += "->Indicar quantas ocorrencias na label\n"
+    str_info += "->Conferir se os arquivos selecionados são access\n"
+    # str_info += ""
+    # str_info += ""
+    # str_info += ""
+    # str_info += ""
+    # str_info += ""
+    # str_info += ""
+
+    messagebox.showinfo("Info",str_info)
+
+
+
 def close_root():
     if messagebox.askokcancel("SAIR", "Deseja Sair?"):
         root.destroy()
@@ -176,6 +203,7 @@ def select_table():
     def month_changed(event):
         global selected_table
         selected_table = selected_month.get()
+        #colocar aqui o progressbar
         compara()
     
     month_cb.bind('<<ComboboxSelected>>', month_changed)
@@ -188,34 +216,121 @@ def select_table():
 
 def select_file():
     file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
-    file_name = fd.askopenfilename(title='Selecionar Banco antigo',filetypes=file_types)
+    file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO ANTIGO',filetypes=file_types)
     global path1
     global path2
     path1 = file_name
     if(path1 != "" and path2 != ""):
         select_table()
-#    lbl1.configure(text=file_name)
     
 def select_file2():
     file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
-    file_name = fd.askopenfilename(title='Selecionar Banco antigo',filetypes=file_types)
+    file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO NOVO',filetypes=file_types)
     global path1
     global path2
     path2 = file_name
     if(path1 != "" and path2 != ""):
         select_table()
-#    lbl2.configure(text=file_name)
+
+def select_file_export_Antiga():
+    global selected_table
+    if selected_table == "":
+        messagebox.showinfo("Info","Nenhuma tabela selecionada")
+    else:
+        file_types = (('Excel files', '*.xlsx'),('All files', '*.*'))
+        file_path = tk.filedialog.asksaveasfilename(title='SALVAR TABELA ANTIGA',filetypes=file_types)
+        if file_path.endswith('.xlsx') == False:
+            file_path+= '.xlsx'
+        table1.to_excel(file_path,
+                 sheet_name=selected_table,index = False) 
+        str_temp = "start EXCEL.EXE " + file_path
+        os.system(str_temp)
         
-
-#lbl1 = ttk.Label(root, text="dsfsdfsfsfdsfsf")
-#lbl1.configure(text="")
-#lbl1.place(x=(width/2)-200-50, y =80,height = 40, width = 220)
-
-#lbl2 = Label(root, text="")
-#lbl2.configure(text="")
-#lbl2.place(x=(width/2)+50, y = 80,height = 40, width = 220)
-
-
+def select_file_export_Nova():
+    global selected_table
+    global table1
+    if selected_table == "":
+        messagebox.showinfo("Info","Nenhuma tabela selecionada")
+    else:
+        file_types = (('Excel files', '*.xlsx'),('All files', '*.*'))
+        file_path = tk.filedialog.asksaveasfilename(title='SALVAR TABELA NOVA',filetypes=file_types)
+        if file_path.endswith('.xlsx') == False:
+            file_path+= '.xlsx'
+        table2.to_excel(file_path,
+                 sheet_name=selected_table,index = False) 
+        str_temp = "start EXCEL.EXE " + file_path
+        os.system(str_temp)
+    
+def select_file_export_Relat():
+    global selected_table
+    if selected_table == "":
+        messagebox.showinfo("Info","Nenhuma tabela selecionada")
+    else:
+        file_types = (('Excel files', '*.xlsx'),('All files', '*.*'))
+        file_path = tk.filedialog.asksaveasfilename(title='SALVAR TABELA NOVA',filetypes=file_types)
+        if file_path.endswith('.xlsx') == False:
+            file_path+= '.xlsx'
+        def multiple_dfs(df_list, sheets, file_name, spaces):
+            writer = pd.ExcelWriter(file_name,engine='xlsxwriter')   
+            row = 3
+            for dataframe in df_list:
+                dataframe.to_excel(writer,sheet_name=sheets,startrow=row , startcol=0,index = False)   
+                row = row + len(dataframe.index) + spaces + 1
+            writer.save()
+        
+        # list of dataframes
+        dfs = [table_discrep,table_novas,table_excluidas]
+        
+        # run function
+        multiple_dfs(dfs, 'RELATÓRIO',file_path, 3)
+        str_temp = "start EXCEL.EXE " + file_path
+        os.system(str_temp)
+        
+        
+def select_file_export_Complet():
+    global selected_table
+    global table1
+    global path1,path2
+    path_1 = path1
+    path_2 = path2
+    if selected_table == "":
+        messagebox.showinfo("Info","Nenhuma tabela selecionada")
+    else:
+        file_types = (('Excel files', '*.xlsx'),('All files', '*.*'))
+        file_path = tk.filedialog.asksaveasfilename(title='SALVAR TABELA NOVA',filetypes=file_types)
+        if file_path.endswith('.xlsx') == False:
+            file_path+= '.xlsx'
+        #Tira o caminho e deixa só o nome dos arquivos selecionados
+        while(path_1.find("/") != -1):
+           path_1 = path_1[1:]  
+        while(path_2.find("/") != -1):
+            path_2 = path_2[1:]
+        if len(path_1) >=31 or len(path_2) >= 31:
+            path_1 = "ANTIGO"
+            path_2 = "NOVO"
+        writer = pd.ExcelWriter(file_path,engine='xlsxwriter')   
+        table1.to_excel(writer,
+                 sheet_name=path_1,index = False) 
+        table2.to_excel(writer,
+                 sheet_name=path_2,index = False) 
+        def multiple_dfs(df_list, sheets, file_name, spaces):
+            row = 3
+            for dataframe in df_list:
+                dataframe.to_excel(writer,sheet_name=sheets,startrow=row , startcol=0,index = False)   
+                row = row + len(dataframe.index) + spaces + 1
+            writer.save()
+        
+        # list of dataframes
+        dfs = [table_discrep,table_novas,table_excluidas]
+        
+        # run function
+        multiple_dfs(dfs, 'RELATÓRIO',file_path, 3)
+        str_temp = "start EXCEL.EXE " + file_path
+        os.system(str_temp)
+        
+        
+        str_temp = "start EXCEL.EXE " + file_path
+        os.system(str_temp)    
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar,tearoff=0)
@@ -224,12 +339,12 @@ filemenu.add_command(label="ABRIR ARQUIVO NOVO",command=select_file2)
 filemenu.add_command(label="SAIR",command=close_root)
 helpmenu = tk.Menu(menubar,tearoff=0)
 helpmenu.add_command(label="Como usar")
-helpmenu.add_command(label="Sobre o programa")
+helpmenu.add_command(label="Sobre o programa",command=myinfo)
 exportmenu = tk.Menu(menubar,tearoff=0)
-exportmenu.add_command(label="Exportar CSV tabela antiga")
-exportmenu.add_command(label="Exportar CSV tabela nova")
-exportmenu.add_command(label="Exportar CSV relatório")
-exportmenu.add_command(label="Exportar CSV Completo")
+exportmenu.add_command(label="Exportar CSV tabela antiga",command=select_file_export_Antiga)
+exportmenu.add_command(label="Exportar CSV tabela nova",command=select_file_export_Nova)
+exportmenu.add_command(label="Exportar CSV relatório",command=select_file_export_Relat)
+exportmenu.add_command(label="Exportar CSV Completo",command=select_file_export_Complet)
 
 
 menubar.add_cascade(label="Arquivo", menu=filemenu)
@@ -302,17 +417,18 @@ frame_resul_novas.place(x=0, y =(height/1.7)-178+45,height = (height/2.86)-178, 
 pt_resul_novas = Table(frame_resul_novas)
 pt_resul_novas.model.df =df
 options = {
- 'cellbackgr': '#98faa7',
- 'colheadercolor': '#16f747',
- 'rowselectedcolor': '#98faa7',
+  'rowselectedcolor': '#fa9898',
+  'cellbackgr': '#fa9898',
+
+# 'colheadercolor': '#16f747',
+
  'textcolor': 'black'}
 config.apply_options(options, pt_resul_novas)
 pt_resul_novas.show()
-# pt_resul_novas.setRowColors(rows=0, clr='#00ff08',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_novas.setRowColors(rows=1, clr='#00ff08',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_novas.setRowColors(rows=2, clr='#00ff08',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_novas.setRowColors(rows=3, clr='#00ff08',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_novas.setRowColors(rows=4, clr='#00ff08',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
+# pt_resul_novas.setRowColors(rows=0, clr='#00ff08',
+#                             cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
+
+
 pt_resul_novas.autoResizeColumns()
 pt_resul_novas.redraw()
 
@@ -328,18 +444,15 @@ pt_resul_excluidas = Table(frame_resul_excluidas)
 
 pt_resul_excluidas.model.df =df
 options = {
- 'cellbackgr': '#fa9898',
- 'colheadercolor': '#f71616',
- 'rowselectedcolor': '#fa9898',
+ 'cellbackgr': '#98faa7',
+ 'rowselectedcolor': '#98faa7',
+ #'colheadercolor': '#f71616',
+
  'textcolor': 'black'}
 config.apply_options(options, pt_resul_excluidas)
 pt_resul_excluidas.autoResizeColumns()
 pt_resul_excluidas.show()
-# pt_resul_excluidas.setRowColors(rows=1, clr='#ff0000',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_excluidas.setRowColors(rows=2, clr='#ff0000',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_excluidas.setRowColors(rows=3, clr='#ff0000',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_excluidas.setRowColors(rows=4, clr='#ff0000',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-# pt_resul_excluidas.setRowColors(rows=0, clr='#ff0000',  cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
+
 pt_resul_excluidas.redraw()
 
 
@@ -347,4 +460,5 @@ pt_resul_excluidas.redraw()
 
 
 root.protocol("WM_DELETE_WINDOW", close_root)
+
 root.mainloop()
