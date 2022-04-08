@@ -8,10 +8,22 @@ from pandastable import config
 
 global path1
 global path2
+
+
+            
 path1 = ''
 path2 = ''
 selected_table = ""
 table1 = pd.DataFrame()
+
+def pinta_discrep():
+    
+    for i in range(0,table_discrep.shape[0]-1,2):
+        for j in range(1,table_discrep.shape[1]-1):
+            if table_discrep.iat[i,j]!= "" and table_discrep.iat[i,j] != table_discrep.iat[i+1,j]:            
+                pt_resul_discrep.setRowColors(rows=i, clr='#ff0000',  cols=[j])
+                pt_resul_discrep.setRowColors(rows=i+1, clr='#ff0000',  cols=[j])
+
 def compara():
     
         
@@ -99,17 +111,17 @@ def compara():
     else:
         print("ACONTECEU ALGUMA COISA ERRADA NA PARTE DAS LINHAS DISCREPANTES")
     temp_index = table_discrep.index.tolist()
-    print(temp_index)
+
     for i in range(len(temp_index)):
         temp_index[i] = temp_index[i]+1
     table_discrep.index = temp_index
     temp_index = table_novas.index.tolist()
-    print(temp_index)
+
     for i in range(len(temp_index)):
         temp_index[i] = temp_index[i]+1
     table_novas.index = temp_index
     temp_index = table_excluidas.index.tolist()
-    print(temp_index)
+
     for i in range(len(temp_index)):
         temp_index[i] = temp_index[i]+1
     table_excluidas.index = temp_index
@@ -119,6 +131,7 @@ def compara():
     pt1.contractColumns()
     pt1.redraw()
     pt2.model.df =table2
+
     pt2.autoResizeColumns()
     pt2.contractColumns()
     pt2.redraw()
@@ -126,6 +139,8 @@ def compara():
     pt_resul_discrep.autoResizeColumns()
     pt_resul_discrep.contractColumns()
     pt_resul_discrep.showIndex()
+    pt_resul_discrep.redraw()
+    pinta_discrep()
     pt_resul_discrep.redraw()
     pt_resul_novas.model.df = table_novas
     pt_resul_novas.autoResizeColumns()
@@ -418,7 +433,7 @@ pt_resul_discrep = Table(frame_resul_discrep)
 pt_resul_discrep.model.df =df
 options = {
  'cellbackgr': '#f7f6dc',
- 'rowselectedcolor': '#f7f6dc',
+ #'rowselectedcolor': '#f7f6dc',
  'textcolor': 'black'}
 config.apply_options(options, pt_resul_discrep)
 pt_resul_discrep.show()
