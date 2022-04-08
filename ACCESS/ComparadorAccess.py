@@ -98,21 +98,44 @@ def compara():
                     break
     else:
         print("ACONTECEU ALGUMA COISA ERRADA NA PARTE DAS LINHAS DISCREPANTES")
-
+    temp_index = table_discrep.index.tolist()
+    print(temp_index)
+    for i in range(len(temp_index)):
+        temp_index[i] = temp_index[i]+1
+    table_discrep.index = temp_index
+    temp_index = table_novas.index.tolist()
+    print(temp_index)
+    for i in range(len(temp_index)):
+        temp_index[i] = temp_index[i]+1
+    table_novas.index = temp_index
+    temp_index = table_excluidas.index.tolist()
+    print(temp_index)
+    for i in range(len(temp_index)):
+        temp_index[i] = temp_index[i]+1
+    table_excluidas.index = temp_index
+    
     pt1.model.df =table1
     pt1.autoResizeColumns()
+    pt1.contractColumns()
     pt1.redraw()
     pt2.model.df =table2
     pt2.autoResizeColumns()
+    pt2.contractColumns()
     pt2.redraw()
     pt_resul_discrep.model.df = table_discrep
     pt_resul_discrep.autoResizeColumns()
-    pt_resul_discrep
+    pt_resul_discrep.contractColumns()
+    pt_resul_discrep.showIndex()
+    pt_resul_discrep.redraw()
     pt_resul_novas.model.df = table_novas
     pt_resul_novas.autoResizeColumns()
+    pt_resul_novas.contractColumns()
+    pt_resul_novas.showIndex()
     pt_resul_novas.redraw()
     pt_resul_excluidas.model.df = table_excluidas
     pt_resul_excluidas.autoResizeColumns()
+    pt_resul_excluidas.autoResizeColumns()
+    pt_resul_excluidas.showIndex()
     pt_resul_excluidas.redraw()
 
     
@@ -317,7 +340,7 @@ def select_file_export_Complet():
         def multiple_dfs(df_list, sheets, file_name, spaces):
             row = 3
             for dataframe in df_list:
-                dataframe.to_excel(writer,sheet_name=sheets,startrow=row , startcol=0,index = False)   
+                dataframe.to_excel(writer,sheet_name=sheets,startrow=row , startcol=0,index = True)   
                 row = row + len(dataframe.index) + spaces + 1
             writer.save()
         
