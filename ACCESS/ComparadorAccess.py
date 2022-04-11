@@ -352,6 +352,7 @@ def select_file2():
         path2 = file_name
         if file_name.endswith('.accdb') == False:
             messagebox.showinfo("ERRO","SELECIONE UM ARQUIVO ACCESS (.accdb)")
+            break
         else:
             break
         
@@ -371,10 +372,12 @@ def select_file():
         path1 = file_name
         if file_name.endswith('.accdb') == False:
             messagebox.showinfo("ERRO","SELECIONE UM ARQUIVO ACCESS (.accdb)")
+            break
         else:
             break
         #Chama a função para selecionar o banco novo
-    select_file2()
+    if path1 != "":
+        select_file2()
     
 
 def select_file_export_Antiga():
@@ -482,7 +485,8 @@ def select_file_export_Complet():
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar,tearoff=0)
-filemenu.add_command(label="SELECIONAR ARQUIVO ACCESS",command=select_file)
+filemenu.add_command(label="SELECIONAR ARQUIVO ACCESS (.accdb)",command=select_file)
+filemenu.add_command(label="SELECIONAR ARQUIVO EXCEL (.xlsx)",command=select_file)
 filemenu.add_command(label="SAIR",command=close_root)
 helpmenu = tk.Menu(menubar,tearoff=0)
 helpmenu.add_command(label="Como usar")
