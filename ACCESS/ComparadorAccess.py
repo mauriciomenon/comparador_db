@@ -267,8 +267,8 @@ def myinfo():
     str_info += "->Arrumar as opções de exportar\n"
     str_info += "->Fazer uma aba para selecionar o elemento de comparação\n"
     str_info += "->Fazer uma progressbar para diferenciar quando o programa travou\n"
-    str_info += "->Indicar quantas ocorrencias na label\n"
-    str_info += "->Conferir se os arquivos selecionados são access\n"
+    str_info += "->FEITO Indicar quantas ocorrencias na label\n"
+    str_info += "->FEITO Conferir se os arquivos selecionados são access\n"
     str_info += "->fazer funcionar com xlsx\n"
     # str_info += ""
     # str_info += ""
@@ -342,23 +342,38 @@ def select_table():
 
 def select_file2():
     #Função para seleção do banco novo
-    file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
-    file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO NOVO',filetypes=file_types)
     global path1
     global path2
-    path2 = file_name
+    
+    while(True):
+        file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
+        file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO NOVO',filetypes=file_types)
+
+        path2 = file_name
+        if file_name.endswith('.accdb') == False:
+            messagebox.showinfo("ERRO","SELECIONE UM ARQUIVO ACCESS (.accdb)")
+        else:
+            break
+        
     if(path1 != "" and path2 != ""):
         #Chama a função para selecionar a tabela
         select_table()
 
 def select_file():
     #Função de seleção do banco antigo
-    file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
-    file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO ANTIGO',filetypes=file_types)
     global path1
     global path2
-    path1 = file_name
-    #Chama a função para selecionar o banco novo
+    
+    while(True):
+        file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
+        file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO ANTIGO',filetypes=file_types)
+
+        path1 = file_name
+        if file_name.endswith('.accdb') == False:
+            messagebox.showinfo("ERRO","SELECIONE UM ARQUIVO ACCESS (.accdb)")
+        else:
+            break
+        #Chama a função para selecionar o banco novo
     select_file2()
     
 
