@@ -10,13 +10,11 @@ import os
 import sys
 import tkinter as tk
 import openpyxl
-import math
 from tkinter import ttk, messagebox, filedialog as fd
 from pandastable import Table
 from pandastable import config
-from openpyxl.styles import PatternFill,Alignment,Font
+from openpyxl.styles import PatternFill,Font
 from openpyxl.styles.borders import Border, Side
-from openpyxl.utils import get_column_letter
 
 global path1
 global path2
@@ -316,7 +314,7 @@ def myinfo():
     str_info += "->FEITO Indicar quantas ocorrencias na label\n"
     str_info += "->FEITO Conferir se os arquivos selecionados são access\n"
     str_info += "->fazer funcionar com xlsx\n"
-    # str_info += ""
+    str_info += "-> Fazer pintar as outras duas abas da janela principal"
     # str_info += ""
     # str_info += ""
     # str_info += ""
