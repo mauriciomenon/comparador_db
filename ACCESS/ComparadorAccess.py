@@ -9,9 +9,11 @@ import pandas as pd
 import os
 import sys
 import tkinter as tk
+import openpyxl
 from tkinter import ttk, messagebox, filedialog as fd
 from pandastable import Table
 from pandastable import config
+from openpyxl.styles import PatternFill,Alignment,Font
 
 global path1
 global path2
@@ -437,6 +439,49 @@ def select_file():
         select_file2()
 
 
+def organiza_relat(file_path):
+    #TODO:'
+    global table_obj
+    global table_discrep
+    print(file_path)
+    try:
+       
+        table_obj = openpyxl.load_workbook(file_path)
+        print("abriu")
+    except:
+        try:
+            file_path = file_path.replace("/", "\\")
+            table_obj = openpyxl.load_workbook(file_path)
+            print("abriu aq")
+        except:
+            print("ai realmente não ta abrindo o arquivo antigo")
+    
+    #carrega o sheet        
+    print(table_obj.sheetnames)
+    table_sheet_resul_obj = table_obj[table_obj.sheetnames[2]]
+    cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
+    #table_sheet_resul_obj.cell(1,1).fill = cinza
+    table_sheet_resul_obj.cell(3,1).value = "LINHAS DISCREPANTES:"
+    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3,1).value = "LINHAS ADICIONADAS (presentes somente no arquivo novo):"
+    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1,1).value = "LINHAS EXCLUIDAS(presentes somente no arquivo antigo):"
+    table_sheet_resul_obj.cell(3,1).font = Font(bold= True)
+    table_sheet_resul_obj.sheet_view.showGridLines = False
+    for i in range(2,table_discrep.shape[1]):
+        table_sheet_resul_obj.cell(4,i).fill = cinza
+        table_sheet_resul_obj.cell(4+table_discrep.shape[0]+3+1,i).fill = cinza
+        table_sheet_resul_obj.cell(4+table_discrep.shape[0]+3+table_novas.shape[0]+3+2,i).fill = cinza
+       # table_sheet_resul_obj.cell(4+,i).fill = cinza
+        
+    for i in range(0,table_discrep.shape[0]):
+        table_sheet_resul_obj.cell(i+5,1).fill = cinza   
+    for i in range(0,table_novas.shape[0]):
+        table_sheet_resul_obj.cell(i+5+table_discrep.shape[0]+4,1).fill = cinza   
+    for i in range(0,table_excluidas.shape[0]):
+        table_sheet_resul_obj.cell(i+5+table_discrep.shape[0]+3+table_novas.shape[0]+5,1).fill = cinza   
+        
+    table_obj.save(file_path)
+
+
 def select_file_export_Antiga():
     # Função que exporta a tabela antiga para um arquivo Excel xlsx
     global selected_table
@@ -483,13 +528,13 @@ def select_file_export_Relat():
                                                     filetypes=file_types)
         if file_path.endswith('.xlsx') is False:
             file_path += '.xlsx'
-
+        writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
         def multiple_dfs(df_list, sheets, file_name, spaces):
-            writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
             row = 3
             for dataframe in df_list:
                 dataframe.to_excel(writer, sheet_name=sheets,
-                                   startrow=row, startcol=0, index=False)
+                                   startrow=row, startcol=0,
+                                   index=True)#, header=False)
                 row = row + len(dataframe.index) + spaces + 1
             writer.save()
 
@@ -498,6 +543,11 @@ def select_file_export_Relat():
 
         # run function
         multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
+        try:
+            writer.close()
+        except:
+            pass
+        organiza_relat(file_path)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
 
@@ -544,6 +594,11 @@ def select_file_export_Complet():
 
         # run function
         multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
+        try:
+            writer.close()
+        except:
+            pass
+        organiza_relat(file_path)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
 
