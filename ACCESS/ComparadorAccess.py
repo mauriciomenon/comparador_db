@@ -619,9 +619,9 @@ frame_resul_discrep.place(x=0, y=20,
 pt_resul_discrep = Table(frame_resul_discrep)
 pt_resul_discrep.model.df = df
 options = {
- 'cellbackgr': '#f7f6dc',
- # 'rowselectedcolor': '#f7f6dc',
- 'textcolor': 'black'}
+    'cellbackgr': '#f7f6dc',
+    # 'rowselectedcolor': '#f7f6dc',
+    'textcolor': 'black'}
 config.apply_options(options, pt_resul_discrep)
 pt_resul_discrep.show()
 pt_resul_discrep.autoResizeColumns()
@@ -642,9 +642,9 @@ frame_resul_novas.place(x=0, y=(height/1.7)-178+45,
 pt_resul_novas = Table(frame_resul_novas)
 pt_resul_novas.model.df = df
 options = {
-  'rowselectedcolor': '#fa9898',
-  'cellbackgr': '#fa9898',
-  'textcolor': 'black'}
+    'rowselectedcolor': '#fa9898',
+    'cellbackgr': '#fa9898',
+    'textcolor': 'black'}
 config.apply_options(options, pt_resul_novas)
 pt_resul_novas.show()
 pt_resul_novas.autoResizeColumns()
@@ -665,11 +665,11 @@ pt_resul_excluidas = Table(frame_resul_excluidas)
 
 pt_resul_excluidas.model.df = df
 options = {
- 'cellbackgr': '#98faa7',
- 'rowselectedcolor': '#98faa7',
- # 'colheadercolor': '#f71616',
- 'gridcolor': 'black',
- 'textcolor': 'black'}
+    'cellbackgr': '#98faa7',
+    'rowselectedcolor': '#98faa7',
+    # 'colheadercolor': '#f71616',
+    'gridcolor': 'black',
+    'textcolor': 'black'}
 config.apply_options(options, pt_resul_excluidas)
 pt_resul_excluidas.autoResizeColumns()
 pt_resul_excluidas.show()
