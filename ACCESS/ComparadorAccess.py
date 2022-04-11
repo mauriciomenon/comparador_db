@@ -1,3 +1,4 @@
+#up
 # PROGRAMA EM PYTHON PARA FAZER COMPARAÇÃO DE TABELAS EM ARQUIVOS ACCESS .accdb
 #Autor: Rafael Henrique da Rosa
 #Estagiário Divisão de Engenharia de Manutenção Eletrônica (SMIN.DT) - Itaipu Binacional
