@@ -263,7 +263,7 @@ def myinfo():
     str_info += "excluidas,novas e discrepantes"
 #TODO:*
     str_info += "\nTODO:\n"
-    str_info += "->Fazer um pequeno tutorial na aba ajuda\n"
+    str_info += "->FEITO Fazer um pequeno tutorial na aba ajuda\n"
     str_info += "->Arrumar as opções de exportar\n"
     str_info += "->Fazer uma aba para selecionar o elemento de comparação\n"
     str_info += "->Fazer uma progressbar para diferenciar quando o programa travou\n"
@@ -280,11 +280,13 @@ def myinfo():
     messagebox.showinfo("Info",str_info)
 
 def show_tutorial():
+    #Função que exibe um pequeno tutorial
+    
+    #Abre o arquivo 'tutorial.txt' que deve estar na pasta do algoritmo
     f = open("tutorial.txt", "rt",encoding='utf-8')
     x = f.read()
-    
+    #Mostra o conteudo do arquivo em uma messagebox
     messagebox.showinfo("Info",x)
- #   messagebox.showinfo("AJUDA",lines)
     
 def close_root():
     #Função para confimar o fechamento da interface
