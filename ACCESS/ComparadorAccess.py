@@ -17,149 +17,221 @@ selected_table = ""
 table1 = pd.DataFrame()
 
 def pinta_discrep():
-    
+    #Função responsavel por mudar a cor das celulas que possuem os mesmos valores de comparação
+    #e outros valores diferentes
+    #ESSA FUNÇÃO DOBRA O TEMPO DE COMPILAÇÃO
+
+    #passa pelo dataframe de discrepantes com passo de 2
     for i in range(0,table_discrep.shape[0]-1,2):
-        for j in range(1,table_discrep.shape[1]-1):
-            if table_discrep.iat[i,j]!= "" and table_discrep.iat[i,j] != table_discrep.iat[i+1,j]:            
+        #obtem uma lista de booleanos indicando valores diferentes
+        uq = table_discrep.iloc[i] != table_discrep.iloc[i+1]
+        uq = uq.to_list()
+        #obtem uma lista de booleanos indicando campos com "NaN"
+        #Necessario pois por algum motivo a comparação NaN == NaN retorna False
+        uq2 = table_discrep.iloc[i].isnull()
+        uq2 = uq2.to_list()
+    
+        #percorre as listas e pinta de vermelho os valores diferentes
+        for j in range(1,len(uq)):
+            if uq[j] == True and uq2[j] == False:
                 pt_resul_discrep.setRowColors(rows=i, clr='#ff0000',  cols=[j])
                 pt_resul_discrep.setRowColors(rows=i+1, clr='#ff0000',  cols=[j])
 
-def compara():
-    
-        
-    global table_novas
-    global table_excluidas
-    global table_discrep
-    global table1
-    global table2
-    os.path.dirname(os.path.realpath(__file__))
-    
-    #file1 = 'ACCESS_ANTIGO.accdb'
-    #file2 = 'ACCESS_NOVO.accdb'
-    file1 = path1
-    file2 = path2
-    path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
 
-    
-    global selected_table
-    export_command = path + '\\mdb-export.exe ' + file1 
-    export_command += ' '
-    export_command += selected_table + '  > temp.csv'
-    subprocess.run(['cmd.exe', '/c',export_command])
-    
-    table1 = pd.read_csv('temp.csv',sep=',',encoding='iso-8859-1')
-    os.remove("temp.csv")
-    
-    export_command = path + '\\mdb-export.exe ' + file2
-    export_command += ' '
-    export_command += selected_table + '  > temp.csv'
-    subprocess.run(['cmd.exe', '/c',export_command])
-    
-    table2 = pd.read_csv('temp.csv',sep=',',encoding='iso-8859-1')
-    os.remove("temp.csv")
-    
-    
-    
-    table_novas = table2[0:0]
-    table_excluidas = table2[0:0]
-    table_discrep = table2[0:0]
-    
-    table_excluidas = table1[~table1.set_index(['RTUNO','PNTNO']).index.isin(table2.set_index(['RTUNO','PNTNO']).index)]
-    
-    
-    
-    
-    table_novas = table2[~table2.set_index(['RTUNO','PNTNO']).index.isin(table1.set_index(['RTUNO','PNTNO']).index)]
-    
-    
-    
-    table_discrep1 = table1[table1.set_index(['RTUNO','PNTNO']).index.isin(table2.set_index(['RTUNO','PNTNO']).index)]
-    table_aux = table_discrep1
-       
-    for col in table1.columns:
-       if(col != 'RTUNO' and col!= 'PNTNO'):
-          col_test = ['RTUNO','PNTNO']
-          col_test.append(col)
-          table_aux = table_aux[table_aux.set_index(col_test).index.isin(table2.set_index(col_test).index)]
-    
-    table_discrep1 = table_discrep1[~table_discrep1.set_index(['RTUNO','PNTNO']).index.isin(table_aux.set_index(['RTUNO','PNTNO']).index)]
-    
-    
-    table_discrep2 = table2[table2.set_index(['RTUNO','PNTNO']).index.isin(table1.set_index(['RTUNO','PNTNO']).index)]
-    table_aux = table_discrep2
-    
-    for col in table2.columns:
-        if(col != 'RTUNO' and col!= 'PNTNO'):
-            col_test = ['RTUNO','PNTNO']
-            col_test.append(col)
-            table_aux = table_aux[table_aux.set_index(col_test).index.isin(table1.set_index(col_test).index)]
-    
-    table_discrep2 = table_discrep2[~table_discrep2.set_index(['RTUNO','PNTNO']).index.isin(table_aux.set_index(['RTUNO','PNTNO']).index)]
-    
-    
-    
-    if(table_discrep1.shape[0] == table_discrep2.shape[0]):
-        table_discrep1.insert(loc=0, column='Arquivo', value='path1')
-        table_discrep2.insert(loc=0, column='Arquivo', value='path2')
-        table_discrep = table_discrep2[0:0]
-        for i in range(table_discrep2.shape[0]):
-            table_discrep = pd.concat([table_discrep,table_discrep1.iloc[[i]]],ignore_index = False) 
-            for j in range(table_discrep2.shape[0]):
-                if(table_discrep2.iat[j,1] == table_discrep1.iat[i,1] and table_discrep2.iat[j,2] == table_discrep1.iat[i,2]):
-                    table_discrep = pd.concat([table_discrep,table_discrep2.iloc[[j]]],ignore_index = False) 
-                    break
-    else:
-        print("ACONTECEU ALGUMA COISA ERRADA NA PARTE DAS LINHAS DISCREPANTES")
-    temp_index = table_discrep.index.tolist()
+def update_table():
+    #Função responsavel por atualizar as tabelas na interface após a comparação
 
-    for i in range(len(temp_index)):
-        temp_index[i] = temp_index[i]+1
-    table_discrep.index = temp_index
-    temp_index = table_novas.index.tolist()
-
-    for i in range(len(temp_index)):
-        temp_index[i] = temp_index[i]+1
-    table_novas.index = temp_index
-    temp_index = table_excluidas.index.tolist()
-
-    for i in range(len(temp_index)):
-        temp_index[i] = temp_index[i]+1
-    table_excluidas.index = temp_index
-    
+    #Atualiza a tabela 1     
     pt1.model.df =table1
     pt1.autoResizeColumns()
     pt1.contractColumns()
     pt1.redraw()
+    
+    #Atualiza a tabela 2  
     pt2.model.df =table2
-
     pt2.autoResizeColumns()
     pt2.contractColumns()
     pt2.redraw()
+    
+    #Atualiza a tabela de discrepancias
     pt_resul_discrep.model.df = table_discrep
     pt_resul_discrep.autoResizeColumns()
     pt_resul_discrep.contractColumns()
     pt_resul_discrep.showIndex()
     pt_resul_discrep.redraw()
+    #Função que pinta os valores discrepantes
     pinta_discrep()
+    #Deixa uma linha sem dados como a selecionada
+    #A linha selecionada tem uma cor diferente e não mostra os valores discrepantes pintados
+    pt_resul_discrep.movetoSelection(row = table_discrep.shape[0], col=0)
     pt_resul_discrep.redraw()
+    
+    #Atualiza a tabela das linhas novas 
     pt_resul_novas.model.df = table_novas
     pt_resul_novas.autoResizeColumns()
     pt_resul_novas.contractColumns()
     pt_resul_novas.showIndex()
     pt_resul_novas.redraw()
+    
+    #Atualiza a tabela das linhas excluidas
     pt_resul_excluidas.model.df = table_excluidas
     pt_resul_excluidas.autoResizeColumns()
     pt_resul_excluidas.autoResizeColumns()
     pt_resul_excluidas.showIndex()
     pt_resul_excluidas.redraw()
 
+        
+def compara():
+    #FUNÇÃO RESPONSAVEL PELA COMPARAÇÃO DAS DUAS TABELAS
+    global table_novas
+    global table_excluidas
+    global table_discrep
+    global table1
+    global table2
+    global selected_table
+    
+    #Guarda o caminho até a pasta do programa
+    os.path.dirname(os.path.realpath(__file__))
+    
+    
+    file1 = path1
+    file2 = path2
+    
+    #Seleciona a pasta mdbtools que deve estar na mesma pasta do programa
+    path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
+
+    #Cria a linha de comando para exportar a tabela selecionada no arquivo antigo 
+    #para um arquivo csv temporario
+    #Funciona somente se o executavel mdb-export.exe existe na pasta mdbtools
+    export_command = path + '\\mdb-export.exe ' + file1 
+    export_command += ' '
+    export_command += selected_table + '  > temp.csv'
+    #executa a linha de comando no cmd
+    subprocess.run(['cmd.exe', '/c',export_command])
+    
+    #importa o arquivo csv em um dataframe do pandas e exclui o arquivo 
+    #o encoding é necessário pois na tabela existe um caracter "°"
+    table1 = pd.read_csv('temp.csv',sep=',',encoding='iso-8859-1')
+    os.remove("temp.csv")
+    
+    #Cria a linha de comando para exportar a tabela selecionada no arquivo novo 
+    #para um arquivo csv temporario
+    #Funciona somente se o executavel mdb-export.exe existe na pasta mdbtools
+    export_command = path + '\\mdb-export.exe ' + file2
+    export_command += ' '
+    export_command += selected_table + '  > temp.csv'
+    subprocess.run(['cmd.exe', '/c',export_command])
+    
+    #importa o arquivo csv em um dataframe do pandas e exclui o arquivo 
+    #o encoding é necessário pois na tabela existe um caracter "°"
+    table2 = pd.read_csv('temp.csv',sep=',',encoding='iso-8859-1')
+    os.remove("temp.csv")
+    
+    #Copia os nomes das colunas das tabelas carregadas para os 3 dataframes do relatório
+    table_novas = table2[0:0]
+    table_excluidas = table2[0:0]
+    table_discrep = table2[0:0]
+    
+    #Preenche o dataframe table_excluidas com as linhas que possuem valores de 'RTUNO' e 'PNTNO'
+    #que existem na tabela1 e não na tabela2
+    table_excluidas = table1[~table1.set_index(['RTUNO','PNTNO']).index.isin(table2.set_index(['RTUNO','PNTNO']).index)]
+    
+    
+    #Preenche o dataframe table_excluidas com as linhas que possuem valores de 'RTUNO' e 'PNTNO'
+    #que existem na tabela2 e não na tabela1
+    table_novas = table2[~table2.set_index(['RTUNO','PNTNO']).index.isin(table1.set_index(['RTUNO','PNTNO']).index)]
+    
+    #Preenche o dataframe table_discrep1 com as linhas da tabela 1que possuem a combinação 
+    #de 'RTUNO' e 'PNTNO' e estão presentes nos dois bancos
+    table_discrep1 = table1[table1.set_index(['RTUNO','PNTNO']).index.isin(table2.set_index(['RTUNO','PNTNO']).index)]
+    #Copia a table_discrep1 para um dataframe auxiliar
+    table_aux = table_discrep1
+    
+    #Mantem no dataframe auxiliar as linhas que possuem todos as colunas iguais na tabela2
+    for col in table1.columns:
+       if(col != 'RTUNO' and col!= 'PNTNO'):
+          col_test = ['RTUNO','PNTNO']
+          col_test.append(col)
+          table_aux = table_aux[table_aux.set_index(col_test).index.isin(table2.set_index(col_test).index)]
+
+    #Mantem no dataframe table_discrep1 somente as linhas que estão no datafame table_discrep1 e 
+    #não estão no dataframe table_aux, gerando assim somente as linhas que possuem valores diferentes
+    #Não é o melhor jeito de fazer mas é o que funciona
+    #Tentar tirar as linhas que são iguais esvazia o dataframe na primeira iteração
+    table_discrep1 = table_discrep1[~table_discrep1.set_index(['RTUNO','PNTNO']).index.isin(table_aux.set_index(['RTUNO','PNTNO']).index)]
+   
+    #Preenche o dataframe table_discrep2 com as linhas da tabela 2 que possuem a combinação 
+    #de 'RTUNO' e 'PNTNO' e estão presentes nos dois bancos
+    table_discrep2 = table2[table2.set_index(['RTUNO','PNTNO']).index.isin(table1.set_index(['RTUNO','PNTNO']).index)]
+
+    #Copia a table_discrep1 para um dataframe auxiliar
+    table_aux = table_discrep2
+    
+    #Mantem no dataframe auxiliar as linhas que possuem todos as colunas iguais na tabela2
+    for col in table2.columns:
+        if(col != 'RTUNO' and col!= 'PNTNO'):
+            col_test = ['RTUNO','PNTNO']
+            col_test.append(col)
+            table_aux = table_aux[table_aux.set_index(col_test).index.isin(table1.set_index(col_test).index)]
+    
+    #Mantem no dataframe table_discrep1 somente as linhas que estão no datafame table_discrep1 e 
+    #não estão no dataframe table_aux, gerando assim somente as linhas que possuem valores diferentes
+    #Não é o melhor jeito de fazer mas é o que funciona
+    #Tentar tirar as linhas que são iguais esvazia o dataframe na primeira iteração
+    table_discrep2 = table_discrep2[~table_discrep2.set_index(['RTUNO','PNTNO']).index.isin(table_aux.set_index(['RTUNO','PNTNO']).index)]
+    
+    #Verifica se os dataframes que indicam as linhas discrepantes em cada tabela possuem o mesmo tamanho
+    if(table_discrep1.shape[0] == table_discrep2.shape[0]):
+        #Insere uma coluna no inicio dos dataframes de discrepancias com o nome do arquivo original de cada linha
+        table_discrep1.insert(loc=0, column='Arquivo', value='path1')
+        table_discrep2.insert(loc=0, column='Arquivo', value='path2')
+        #Copia os indices do dataframe table_discrep2 para adicionar a coluna Arquivo
+        table_discrep = table_discrep2[0:0]
+        #Itera pelos dataframes de discrepancia para organizar o dataframe table_discrep
+        #Adiciona uma linha da table_discrep1 por vez e procura na table_discrep2
+        #a linha com os mesmos valores de 'RTUNO','PNTNO' para adicionar na sequencia
+        #AFETA MUITO O DESEMPENHO POREM FACILITA A VISUALIZAÇÃO
+        for i in range(table_discrep1.shape[0]):
+            table_discrep = pd.concat([table_discrep,table_discrep1.iloc[[i]]],ignore_index = False) 
+            for j in range(table_discrep2.shape[0]):
+                if(table_discrep2.iat[j,1] == table_discrep1.iat[i,1] and table_discrep2.iat[j,2] == table_discrep1.iat[i,2]):
+                    table_discrep = pd.concat([table_discrep,table_discrep2.iloc[[j]]],ignore_index = False) 
+                    break
+    else:
+        #Se não tiverem o mesmo tamanho alguma coisa absurdamente errada aconteceu
+        print("ACONTECEU ALGUMA COISA ERRADA NA PARTE DAS LINHAS DISCREPANTES")
+   
+    #Devido ao fato do dataframe iniciar com indice 0 e a tabela do pandastable com indice 1
+    #É necessário aplicar uma correção nos indices dos 3 dataframes:
+        
+    #Correção table_discrep    
+    temp_index = table_discrep.index.tolist()
+    for i in range(len(temp_index)):
+        temp_index[i] = temp_index[i]+1
+    table_discrep.index = temp_index
+    
+    #Correção table_novas
+    temp_index = table_novas.index.tolist()
+    for i in range(len(temp_index)):
+        temp_index[i] = temp_index[i]+1
+    table_novas.index = temp_index
+    
+    #Correção table_excluidas
+    temp_index = table_excluidas.index.tolist()
+    for i in range(len(temp_index)):
+        temp_index[i] = temp_index[i]+1
+    table_excluidas.index = temp_index
+    
+    #Função que atualiza as tabelas na interface
+    update_table()
+
     
 ########################################################################################
 ########################################################################################
 ########################################################################################
 ########################################################################################
 ########################################################################################
-########################################################################################
+############################PARTE DO TK#################################################
 ########################################################################################
 ########################################################################################
 ########################################################################################
@@ -168,7 +240,7 @@ def compara():
 ########################################################################################
 
 def myinfo():
-    #mostra as informações do algoritmo
+    #Função que mostra as informações do algoritmo e o que ainda deve ser implementado
     str_info = "Autor: Rafael Henrique da Rosa\n"
     str_info += "Estagiário Itaipu Binacional- SMIN.DT - Abril de 2022\n"
     str_info += "O algoritmo compara duas tabelas em arquivos access e mostra as linhas "
@@ -194,10 +266,13 @@ def myinfo():
 
 
 def close_root():
+    #Função para confimar o fechamento da interface
     if messagebox.askokcancel("SAIR", "Deseja Sair?"):
         root.destroy()
         sys.exit()
-        
+       
+#dataframe temporário para exibir linhas em branco ao iniciar o programa
+#Unicamente estético, não altera performance        
 df = pd.DataFrame({
     'A': ['','','','','','',],
     'B': ['','','','','','',],
@@ -205,73 +280,74 @@ df = pd.DataFrame({
     'D': ['','','','','','',],
 })
 
+#CRIA A JANELA PRINCIPAL
 
-#TK janela principal
-def option_changed(self, *args):
-    
-    print('asaasdasdasd')
-
-#getting screen width and height of display
 root=tk.Tk()
+#Variáveis com a resolução da tela para ajustar a posição das tabelas
 width= root.winfo_screenwidth() 
 height= root.winfo_screenheight()
-#setting tkinter root size
+#Faz com que a janela principal tenha o tamanho igual a resolução
 root.geometry("%dx%d" % (width, height))
-root.title("COMPARADOR ACCESS v0.1")
+root.title("COMPARADOR ACCESS v0.1.2")
+#Maximiza a janela principal
 root.state("zoomed") 
 
 def select_table():
+    #Função para selecionar a tabela
+    
+    #Variável para uma lista das tabelas presentes no arquivo antigo
     global output_tables
+    
+    #Cria a linha de comando no cmd que executa o arquivo mdb-tables.exe e guarda o output na lista
     path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
     output_tables = subprocess.check_output([path + '\\mdb-tables.exe', path1]).decode()
     output_tables = output_tables.split()
     
-# =============================================================================
-    #########################################################################################
-    #TK escolhe a tabela
-    
+    #Cria uma label para indicar que a tabela deve ser selecionada
     label = ttk.Label(text="Selecione a tabela para comparar:")
     label.place(x=(width/2)-100, y = 0,height = 30, width = 200)
-    #label.pack(fill=tk.X, padx=5, pady=5)
+    
+    #Cria um combobox com a lista de tabelas
     selected_month = tk.StringVar()
     month_cb = ttk.Combobox(root,width = 50,textvariable=selected_month)
     month_cb['values'] = output_tables
     month_cb['state'] = 'readonly'
     month_cb.pack(fill=tk.X, padx=5, pady=5)
     month_cb.place(x=(width/2)-110, y = 30,height = 30, width = 200)
+    
+    #Quando a tabela é selecionada executa a comparação
     def month_changed(event):
         global selected_table
         selected_table = selected_month.get()
-        #colocar aqui o progressbar
         compara()
     
     month_cb.bind('<<ComboboxSelected>>', month_changed)
-    
-     
 
-# =============================================================================
-
-#################################################################################################
 
 def select_file2():
+    #Função para seleção do banco novo
     file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
     file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO NOVO',filetypes=file_types)
     global path1
     global path2
     path2 = file_name
     if(path1 != "" and path2 != ""):
+        #Chama a função para selecionar a tabela
         select_table()
 
 def select_file():
+    #Função de seleção do banco antigo
     file_types = (('Access Files', '*.accdb'),('All files', '*.*'))
     file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO ANTIGO',filetypes=file_types)
     global path1
     global path2
     path1 = file_name
+    #Chama a função para selecionar o banco novo
     select_file2()
     
 
 def select_file_export_Antiga():
+    #Função que exporta a tabela antiga para um arquivo Excel xlsx
     global selected_table
     if selected_table == "":
         messagebox.showinfo("Info","Nenhuma tabela selecionada")
@@ -286,6 +362,7 @@ def select_file_export_Antiga():
         os.system(str_temp)
         
 def select_file_export_Nova():
+    #Função que exporta a tabela nova para um arquivo Excel xlsx
     global selected_table
     global table1
     if selected_table == "":
@@ -301,6 +378,7 @@ def select_file_export_Nova():
         os.system(str_temp)
     
 def select_file_export_Relat():
+    #Função que exporto relatório para um arquivo Excel xlsx
     global selected_table
     if selected_table == "":
         messagebox.showinfo("Info","Nenhuma tabela selecionada")
@@ -327,6 +405,7 @@ def select_file_export_Relat():
         
         
 def select_file_export_Complet():
+    #Função que exporta tudo para um arquivo Excel xlsx
     global selected_table
     global table1
     global path1,path2
@@ -366,7 +445,9 @@ def select_file_export_Complet():
         multiple_dfs(dfs, 'RELATÓRIO',file_path, 3)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
-            
+
+
+#Adiciona um menu a janela principal            
 menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar,tearoff=0)
@@ -387,8 +468,7 @@ menubar.add_cascade(label="Exportar", menu=exportmenu)
 menubar.add_cascade(label="Ajuda", menu=helpmenu)
 root.config(menu=menubar)
 
-
-
+#Cria 3 abas na janela principal para exibir as tabelas e o relatório
 tabControl = ttk.Notebook(root)
 tabControl.place(x=0, y =70,height = height, width = width)
 tab1 = ttk.Frame(tabControl)
@@ -398,6 +478,7 @@ tabControl.add(tab1, text ='RELATÓRIO')
 tabControl.add(tab2, text ='ARQUIVO ANTIGO')
 tabControl.add(tab3, text ='ARQUIVO NOVO')
 
+#Adiciona o frame da tabela antiga na aba 'arquivo antigo'
 frame1 = tk.Frame(tab2)
 frame1.place(x=0, y =0,height = height-178, width = width)
 pt1 = Table(frame1)
@@ -407,6 +488,7 @@ pt1.show()
 pt1.autoResizeColumns()
 pt1.redraw()
 
+#Adiciona o frame da tabela nova na aba 'arquivo novo'
 frame2 = tk.Frame(tab3)
 frame2.place(x=0, y =0,height = height-178, width = width)
 pt2 = Table(frame2)
@@ -414,19 +496,15 @@ pt2.model.df =df
 pt2.autoResizeColumns()
 pt2.show()
 pt2.autoResizeColumns()
-#pt2.columncolors['RTUNO'] = '#ff0000'
-#pt2.drawRect(4, 4, color='#ff0000', tag=None, delete=0)
-#pt2.setRowColors(rows=2, clr='#ff0000',  cols=[1,3,5])
 pt2.autoResizeColumns()
 pt2.redraw()
-#xx = pt2.colorRows()
 
-
+#Label das linhas discrepantes
 lbl_discrep = ttk.Label(tab1, text="LINHAS DISCREPANTES:",
                           font='Helvetica 12 bold')
-#lbl1.configure(text="")
 lbl_discrep.place(x=0, y =0,height = 22, width = width)
 
+#Adiciona um frame para exibir as linhas discrepantes
 frame_resul_discrep = tk.Frame(tab1)
 frame_resul_discrep.place(x=0, y =20,height = (height/1.7)-178, width = width)
 pt_resul_discrep = Table(frame_resul_discrep)
@@ -441,12 +519,12 @@ pt_resul_discrep.autoResizeColumns()
 pt_resul_discrep.redraw()
 
 
-######################################
+#Label das linhas novas
 lbl_novas = ttk.Label(tab1, text="LINHAS ADICIONADAS (presentes somente no arquivo novo):",
                           font='Helvetica 12 bold')
-#lbl1.configure(text="")
 lbl_novas.place(x=0, y =(height/1.7)-178+25,height = 22, width = width)
 
+#Adiciona um frame para exibir as linhas novas
 frame_resul_novas = tk.Frame(tab1)
 frame_resul_novas.place(x=0, y =(height/1.7)-178+45,height = (height/2.86)-178, width = width)
 pt_resul_novas = Table(frame_resul_novas)
@@ -454,25 +532,18 @@ pt_resul_novas.model.df =df
 options = {
   'rowselectedcolor': '#fa9898',
   'cellbackgr': '#fa9898',
-
-# 'colheadercolor': '#16f747',
-
  'textcolor': 'black'}
 config.apply_options(options, pt_resul_novas)
 pt_resul_novas.show()
-# pt_resul_novas.setRowColors(rows=0, clr='#00ff08',
-#                             cols=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
-
-
 pt_resul_novas.autoResizeColumns()
 pt_resul_novas.redraw()
 
-###########################
+#Label das linhas excluidas
 lbl_excluidas = ttk.Label(tab1, text="LINHAS EXCLUIDAS (presentes somente no arquivo antigo):",
                           font='Helvetica 12 bold')
-#lbl1.configure(text="")
 lbl_excluidas.place(x=0, y =((height/1.26)-178),height = 22, width = width)
 
+#Adiciona um frame para exibir as linhas excluidas
 frame_resul_excluidas = tk.Frame(tab1)
 frame_resul_excluidas.place(x=0, y =(height/1.26)-178+25,height = (height/2.86)-178, width = width)
 pt_resul_excluidas = Table(frame_resul_excluidas)
@@ -487,13 +558,12 @@ options = {
 config.apply_options(options, pt_resul_excluidas)
 pt_resul_excluidas.autoResizeColumns()
 pt_resul_excluidas.show()
-
 pt_resul_excluidas.redraw()
 
 
-
-
-
+#Comando quando a janela é fechada
 root.protocol("WM_DELETE_WINDOW", close_root)
 
+
+#Loop janela principal
 root.mainloop()
