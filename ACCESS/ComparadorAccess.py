@@ -60,6 +60,8 @@ def update_table():
     
     #Atualiza a tabela de discrepancias
     pt_resul_discrep.model.df = table_discrep
+    lbl_discrep.configure(text= "LINHAS DISCREPANTES: " + str(table_discrep1.shape[0]))
+
     pt_resul_discrep.autoResizeColumns()
     pt_resul_discrep.contractColumns()
     pt_resul_discrep.showIndex()
@@ -72,6 +74,7 @@ def update_table():
     pt_resul_discrep.redraw()
     
     #Atualiza a tabela das linhas novas 
+    lbl_novas.configure(text= "LINHAS ADICIONADAS (presentes somente no arquivo novo): " + str(table_novas.shape[0]))
     pt_resul_novas.model.df = table_novas
     pt_resul_novas.autoResizeColumns()
     pt_resul_novas.contractColumns()
@@ -79,6 +82,7 @@ def update_table():
     pt_resul_novas.redraw()
     
     #Atualiza a tabela das linhas excluidas
+    lbl_excluidas.configure(text= "LINHAS EXCLUIDAS (presentes somente no arquivo antigo): " + str(table_excluidas.shape[0]))
     pt_resul_excluidas.model.df = table_excluidas
     pt_resul_excluidas.autoResizeColumns()
     pt_resul_excluidas.autoResizeColumns()
@@ -91,6 +95,7 @@ def compara():
     global table_novas
     global table_excluidas
     global table_discrep
+    global table_discrep1
     global table1
     global table2
     global selected_table
@@ -188,8 +193,14 @@ def compara():
     #Verifica se os dataframes que indicam as linhas discrepantes em cada tabela possuem o mesmo tamanho
     if(table_discrep1.shape[0] == table_discrep2.shape[0]):
         #Insere uma coluna no inicio dos dataframes de discrepancias com o nome do arquivo original de cada linha
-        table_discrep1.insert(loc=0, column='Arquivo', value='path1')
-        table_discrep2.insert(loc=0, column='Arquivo', value='path2')
+        path_1 = path1
+        path_2 = path2
+        while(path_1.find("/") != -1):
+           path_1 = path_1[1:]  
+        while(path_2.find("/") != -1):
+            path_2 = path_2[1:]
+        table_discrep1.insert(loc=0, column='Arquivo', value=path_1)
+        table_discrep2.insert(loc=0, column='Arquivo', value=path_2)
         #Copia os indices do dataframe table_discrep2 para adicionar a coluna Arquivo
         table_discrep = table_discrep2[0:0]
         #Itera pelos dataframes de discrepancia para organizar o dataframe table_discrep
