@@ -10,10 +10,13 @@ import os
 import sys
 import tkinter as tk
 import openpyxl
+import math
 from tkinter import ttk, messagebox, filedialog as fd
 from pandastable import Table
 from pandastable import config
 from openpyxl.styles import PatternFill,Alignment,Font
+from openpyxl.styles.borders import Border, Side
+from openpyxl.utils import get_column_letter
 
 global path1
 global path2
@@ -458,16 +461,25 @@ def organiza_relat(file_path):
     
     #carrega o sheet        
     print(table_obj.sheetnames)
-    table_sheet_resul_obj = table_obj[table_obj.sheetnames[2]]
+    table_sheet_resul_obj = table_obj['RELATÓRIO']
     cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
+    vermelho = PatternFill(start_color='ff0000', end_color='ff0000', fill_type='solid')
+    vermelho_claro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
+    verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
+    borda_fina = Border(left=Side(style='thin'),right=Side(style='thin'),top=Side(style='thin'),bottom=Side(style='thin'))
+
     #table_sheet_resul_obj.cell(1,1).fill = cinza
     table_sheet_resul_obj.cell(3,1).value = "LINHAS DISCREPANTES:"
-    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3,1).value = "LINHAS ADICIONADAS (presentes somente no arquivo novo):"
-    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1,1).value = "LINHAS EXCLUIDAS(presentes somente no arquivo antigo):"
     table_sheet_resul_obj.cell(3,1).font = Font(bold= True)
+    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3,1).value = "LINHAS ADICIONADAS (presentes somente no arquivo novo):"
+    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3,1).font = Font(bold= True)
+    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1,1).value = "LINHAS EXCLUIDAS(presentes somente no arquivo antigo):"
+    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1,1).font = Font(bold= True)
+
     table_sheet_resul_obj.sheet_view.showGridLines = False
-    for i in range(2,table_discrep.shape[1]):
+    for i in range(2,table_discrep.shape[1]+2):
         table_sheet_resul_obj.cell(4,i).fill = cinza
+    for i in range(2,table_novas.shape[1]+2):    
         table_sheet_resul_obj.cell(4+table_discrep.shape[0]+3+1,i).fill = cinza
         table_sheet_resul_obj.cell(4+table_discrep.shape[0]+3+table_novas.shape[0]+3+2,i).fill = cinza
        # table_sheet_resul_obj.cell(4+,i).fill = cinza
@@ -478,7 +490,38 @@ def organiza_relat(file_path):
         table_sheet_resul_obj.cell(i+5+table_discrep.shape[0]+4,1).fill = cinza   
     for i in range(0,table_excluidas.shape[0]):
         table_sheet_resul_obj.cell(i+5+table_discrep.shape[0]+3+table_novas.shape[0]+5,1).fill = cinza   
-        
+    
+    for i in range(2,table_discrep.shape[1]+2):
+        for j in range(5,table_discrep.shape[0]+5):
+            table_sheet_resul_obj.cell(j,i).border = borda_fina
+            if j%2 ==1:
+                if i!=2:
+                    if table_sheet_resul_obj.cell(j,i).value != table_sheet_resul_obj.cell(j+1,i).value:
+                        table_sheet_resul_obj.cell(j,i).fill = vermelho
+                        table_sheet_resul_obj.cell(j+1,i).fill = vermelho
+            
+            
+    for i in range(2,table_novas.shape[1]+2):
+        for j in range(table_discrep.shape[0]+5+4,table_discrep.shape[0]+5+4+table_novas.shape[0]):
+            table_sheet_resul_obj.cell(j,i).border = borda_fina
+            table_sheet_resul_obj.cell(j,i).fill = vermelho_claro
+            
+    for i in range(2,table_excluidas.shape[1]+2):
+        for j in range(table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4,table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4+table_excluidas.shape[0]):
+            table_sheet_resul_obj.cell(j,i).border = borda_fina
+            table_sheet_resul_obj.cell(j,i).fill = verde
+            
+# =============================================================================
+#     dims = {}
+#     for row in table_sheet_resul_obj.rows:
+#         for cell in row:
+#             if cell.value:
+#                 dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))    
+#        
+#     for i, column_width in dims.items():  # ,1 to start at 1
+#         table_sheet_resul_obj.column_dimensions[get_column_letter(i)].width = int(math.ceil(column_width*1.42))
+#             
+# =============================================================================
     table_obj.save(file_path)
 
 
