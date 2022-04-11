@@ -279,8 +279,13 @@ def myinfo():
 
     messagebox.showinfo("Info",str_info)
 
-
-
+def show_tutorial():
+    f = open("tutorial.txt", "rt",encoding='utf-8')
+    x = f.read()
+    
+    messagebox.showinfo("Info",x)
+ #   messagebox.showinfo("AJUDA",lines)
+    
 def close_root():
     #Função para confimar o fechamento da interface
     if messagebox.askokcancel("SAIR", "Deseja Sair?"):
@@ -489,7 +494,7 @@ filemenu.add_command(label="SELECIONAR ARQUIVO ACCESS (.accdb)",command=select_f
 filemenu.add_command(label="SELECIONAR ARQUIVO EXCEL (.xlsx)",command=select_file)
 filemenu.add_command(label="SAIR",command=close_root)
 helpmenu = tk.Menu(menubar,tearoff=0)
-helpmenu.add_command(label="Como usar")
+helpmenu.add_command(label="Como usar",command=show_tutorial)
 helpmenu.add_command(label="Sobre o programa",command=myinfo)
 exportmenu = tk.Menu(menubar,tearoff=0)
 exportmenu.add_command(label="Exportar CSV tabela antiga",command=select_file_export_Antiga)
