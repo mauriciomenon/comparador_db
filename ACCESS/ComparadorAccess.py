@@ -310,7 +310,7 @@ def myinfo():
 # TODO:*
     str_info += "\nTODO:\n"
     str_info += "->FEITO Fazer um pequeno tutorial na aba ajuda\n"
-    str_info += "->Arrumar as opções de exportar\n"
+    str_info += "->FEITO Arrumar as opções de exportar\n"
     str_info += "->Fazer uma aba para selecionar o elemento de comparação\n"
     str_info += "->Fazer uma progressbar \n"
     str_info += "->FEITO Indicar quantas ocorrencias na label\n"
@@ -442,11 +442,20 @@ def select_file():
         select_file2()
 
 
-def organiza_relat(file_path):
-    #TODO:'
+def organiza_relat(file_path,is_complet):
     global table_obj
     global table_discrep
     print(file_path)
+    
+        
+
+    cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
+    vermelho = PatternFill(start_color='ff0000', end_color='ff0000', fill_type='solid')
+    vermelho_claro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
+    verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
+    borda_fina = Border(left=Side(style='thin'),right=Side(style='thin'),top=Side(style='thin'),bottom=Side(style='thin'))
+
+
     try:
        
         table_obj = openpyxl.load_workbook(file_path)
@@ -458,15 +467,16 @@ def organiza_relat(file_path):
             print("abriu aq")
         except:
             print("ai realmente não ta abrindo o arquivo antigo")
-    
     #carrega o sheet        
-    print(table_obj.sheetnames)
     table_sheet_resul_obj = table_obj['RELATÓRIO']
-    cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
-    vermelho = PatternFill(start_color='ff0000', end_color='ff0000', fill_type='solid')
-    vermelho_claro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
-    verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
-    borda_fina = Border(left=Side(style='thin'),right=Side(style='thin'),top=Side(style='thin'),bottom=Side(style='thin'))
+    if is_complet:
+        table_sheet_antigo_obj = table_obj[table_obj.sheetnames[0]]
+        table_sheet_novo_obj = table_obj[table_obj.sheetnames[1]]
+        
+        for i in range(1,table1.shape[1]):
+            table_sheet_antigo_obj.cell(1,i).fill = cinza
+            table_sheet_novo_obj.cell(1,i).fill = cinza
+        
 
     #table_sheet_resul_obj.cell(1,1).fill = cinza
     table_sheet_resul_obj.cell(3,1).value = "LINHAS DISCREPANTES:"
@@ -477,6 +487,7 @@ def organiza_relat(file_path):
     table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1,1).font = Font(bold= True)
 
     table_sheet_resul_obj.sheet_view.showGridLines = False
+    
     for i in range(2,table_discrep.shape[1]+2):
         table_sheet_resul_obj.cell(4,i).fill = cinza
     for i in range(2,table_novas.shape[1]+2):    
@@ -491,25 +502,45 @@ def organiza_relat(file_path):
     for i in range(0,table_excluidas.shape[0]):
         table_sheet_resul_obj.cell(i+5+table_discrep.shape[0]+3+table_novas.shape[0]+5,1).fill = cinza   
     
+    
+    for i in range(5,table_discrep.shape[0]+5):
+        table_sheet_resul_obj.cell(i,1).value = table_sheet_resul_obj.cell(i,1).value +1
+    for i in range(table_discrep.shape[0]+5+4,table_discrep.shape[0]+5+4+table_novas.shape[0]):
+        table_sheet_resul_obj.cell(i,1).value = table_sheet_resul_obj.cell(i,1).value +1
+    for i in range(table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4,table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4+table_excluidas.shape[0]):
+        table_sheet_resul_obj.cell(i,1).value = table_sheet_resul_obj.cell(i,1).value +1
+    
     for i in range(2,table_discrep.shape[1]+2):
+
         for j in range(5,table_discrep.shape[0]+5):
+            
             table_sheet_resul_obj.cell(j,i).border = borda_fina
+
             if j%2 ==1:
                 if i!=2:
                     if table_sheet_resul_obj.cell(j,i).value != table_sheet_resul_obj.cell(j+1,i).value:
                         table_sheet_resul_obj.cell(j,i).fill = vermelho
                         table_sheet_resul_obj.cell(j+1,i).fill = vermelho
-            
+                        if is_complet:
+                            for k in range (1,table_discrep.shape[1]):
+                                table_sheet_antigo_obj.cell(table_sheet_resul_obj.cell(j,1).value,k).fill = vermelho
+                                table_sheet_novo_obj.cell(table_sheet_resul_obj.cell(j+1,1).value,k).fill = vermelho
             
     for i in range(2,table_novas.shape[1]+2):
         for j in range(table_discrep.shape[0]+5+4,table_discrep.shape[0]+5+4+table_novas.shape[0]):
             table_sheet_resul_obj.cell(j,i).border = borda_fina
             table_sheet_resul_obj.cell(j,i).fill = vermelho_claro
+            if is_complet:
+                for k in range (1,table_novas.shape[1]):
+                    table_sheet_novo_obj.cell(table_sheet_resul_obj.cell(j,1).value,k).fill = vermelho_claro
             
     for i in range(2,table_excluidas.shape[1]+2):
         for j in range(table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4,table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4+table_excluidas.shape[0]):
             table_sheet_resul_obj.cell(j,i).border = borda_fina
             table_sheet_resul_obj.cell(j,i).fill = verde
+            if is_complet:
+                for k in range (1,table_excluidas.shape[1]):
+                    table_sheet_antigo_obj.cell(table_sheet_resul_obj.cell(j,1).value,k).fill = verde
             
 # =============================================================================
 #     dims = {}
@@ -590,7 +621,7 @@ def select_file_export_Relat():
             writer.close()
         except:
             pass
-        organiza_relat(file_path)
+        organiza_relat(file_path,0)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
 
@@ -641,7 +672,7 @@ def select_file_export_Complet():
             writer.close()
         except:
             pass
-        organiza_relat(file_path)
+        organiza_relat(file_path,1)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
 
