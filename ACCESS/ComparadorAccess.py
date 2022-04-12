@@ -7,7 +7,6 @@
 import subprocess
 import pandas as pd
 import os
-import sys
 import tkinter as tk
 import openpyxl
 from tkinter import ttk, messagebox, filedialog as fd
@@ -396,7 +395,6 @@ def close_root():
     # Função para confimar o fechamento da interface
     if messagebox.askokcancel("SAIR", "Deseja Sair?"):
         root.destroy()
-        sys.exit()
 
 
 # dataframe temporário para exibir linhas em branco ao iniciar o programa
