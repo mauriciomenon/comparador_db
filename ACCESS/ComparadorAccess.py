@@ -228,12 +228,17 @@ def compara():
 
     # Mantem no dataframe auxiliar as linhas
     # que possuem todos as colunas iguais na tabela2
+    col_test = campos
     for col in table1.columns:
-        if(col != 'RTUNO' and col != 'PNTNO'):
-            col_test = ['RTUNO', 'PNTNO']
+        flag = 0
+        for i in range(len(campos)):
+            if campos[i] != col:
+                flag += 1
+        if flag == len(campos):
             col_test.append(col)
             table_aux = table_aux[table_aux.set_index(col_test).index.
                                   isin(table2.set_index(col_test).index)]
+            del col_test[2]
 
     # Mantem no dataframe table_discrep1 somente as
     # linhas que estão no datafame table_discrep1 e
@@ -243,26 +248,31 @@ def compara():
     # Tentar tirar as linhas que são iguais esvazia o
     # dataframe na primeira iteração
     table_discrep1 = table_discrep1[~table_discrep1.set_index(
-        ['RTUNO', 'PNTNO']).index.isin(table_aux.
-                                       set_index(['RTUNO', 'PNTNO']).index)]
+        campos).index.isin(table_aux.
+                                       set_index(campos).index)]
 
     # Preenche o dataframe table_discrep2 com as linhas
     # da tabela 2 que possuem a combinação
     # de 'RTUNO' e 'PNTNO' e estão presentes nos dois bancos
-    table_discrep2 = table2[table2.set_index(['RTUNO', 'PNTNO']).index.
-                            isin(table1.set_index(['RTUNO', 'PNTNO']).index)]
+    table_discrep2 = table2[table2.set_index(campos).index.
+                            isin(table1.set_index(campos).index)]
 
     # Copia a table_discrep1 para um dataframe auxiliar
     table_aux = table_discrep2
 
     # Mantem no dataframe auxiliar as linhas que possuem
     # todos as colunas iguais na tabela2
+    col_test = campos
     for col in table2.columns:
-        if(col != 'RTUNO' and col != 'PNTNO'):
-            col_test = ['RTUNO', 'PNTNO']
+        flag = 0
+        for i in range(len(campos)):
+            if campos[i] != col:
+                flag += 1
+        if flag == len(campos):
             col_test.append(col)
             table_aux = table_aux[table_aux.set_index(col_test).index.
                                   isin(table1.set_index(col_test).index)]
+            del col_test[2]
 
     # Mantem no dataframe table_discrep1 somente as linhas
     # que estão no datafame table_discrep1 e
@@ -272,8 +282,8 @@ def compara():
     # Tentar tirar as linhas que são iguais esvazia o
     # dataframe na primeira iteração
     table_discrep2 = table_discrep2[~table_discrep2.set_index(
-        ['RTUNO', 'PNTNO']).index.isin(table_aux.
-                                       set_index(['RTUNO', 'PNTNO']).index)]
+        campos).index.isin(table_aux.
+                                       set_index(campos).index)]
 
     # Verifica se os dataframes que indicam as linhas
     # discrepantes em cada tabela possuem o mesmo tamanho
