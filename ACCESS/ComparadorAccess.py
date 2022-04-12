@@ -98,7 +98,11 @@ def update_table():
     # Deixa uma linha sem dados como a selecionada
     # A linha selecionada tem uma cor diferente
     # e não mostra os valores discrepantes pintados
-    pt_resul_discrep.movetoSelection(row=table_discrep.shape[0], col=0)
+# =============================================================================
+# =============================================================================
+# #     #pt_resul_discrep.movetoSelection(row=table_discrep.shape[0]+1, col=0)
+# =============================================================================
+# =============================================================================
     pt_resul_discrep.redraw()
 
     # Atualiza a tabela das linhas novas
@@ -237,7 +241,7 @@ def compara():
             col_test.append(col)
             table_aux = table_aux[table_aux.set_index(col_test).index.
                                   isin(table2.set_index(col_test).index)]
-            del col_test[2]
+            del col_test[len(campos)-1]
 
     # Mantem no dataframe table_discrep1 somente as
     # linhas que estão no datafame table_discrep1 e
@@ -270,7 +274,7 @@ def compara():
             col_test.append(col)
             table_aux = table_aux[table_aux.set_index(col_test).index.
                                   isin(table1.set_index(col_test).index)]
-            del col_test[2]
+            del col_test[len(campos)-1]
 
     # Mantem no dataframe table_discrep1 somente as linhas
     # que estão no datafame table_discrep1 e
@@ -436,11 +440,15 @@ def select_campos():
 
     def try_compara():
         global campos
+
         if(campos[0] != 'Nenhum' or campos[1] != 'Nenhum'
            or campos[2] != 'Nenhum'):
-            for i in range(3):
+            campos = list(dict.fromkeys(campos))
+            print(campos)
+            for i in range(len(campos)):
                 if campos[i] == 'Nenhum':
                     del campos[i]
+            print(campos)
             compara()
         else:
             messagebox.showinfo("ERRO", "SELECIONE UM CAMPO PARA COMPARAÇÃO")
