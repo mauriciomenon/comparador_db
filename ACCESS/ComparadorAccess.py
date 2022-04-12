@@ -370,7 +370,7 @@ def myinfo():
     str_info += "\nTODO:\n"
     str_info += "->FEITO Fazer um pequeno tutorial na aba ajuda\n"
     str_info += "->FEITO Arrumar as opções de exportar\n"
-    str_info += "->Fazer uma aba para selecionar o elemento de comparação\n"
+    str_info += "->FEITO (Não testado totalmente) Fazer uma aba para selecionar o elemento de comparação\n"
     str_info += "->NÃO FUNCIONA Fazer uma progressbar \n"
     str_info += "->FEITO Indicar quantas ocorrencias na label\n"
     str_info += "->FEITO Conferir se os arquivos selecionados são access\n"
@@ -378,8 +378,8 @@ def myinfo():
     str_info += "->FEITO Fazer pintar as outras duas abas da janela principal"
     str_info += "->FEITO Corrigir o bug de ler uma linha em branco"
     str_info += "->Fazer um try com o driver do access"
-    str_info += "->Pintar relatório não completo"
-    # str_info += ""
+    str_info += "->FEITO Pintar relatório não completo"
+    str_info += "->Comparações em sequencia"
     # str_info += ""
 
     messagebox.showinfo("Info", str_info)
@@ -424,7 +424,8 @@ root.state("zoomed")
 
 
 def select_campos():
-
+    global campos
+    campos = ['Nenhum', 'Nenhum', 'Nenhum']
     # Quando a tabela é selecionada executa a comparação
     def select_1(event):
         global campos
@@ -497,6 +498,8 @@ def select_table(file_type):
     global table_obj
     # Variável para uma lista das tabelas presentes no arquivo antigo
     global output_tables
+    global selected_table
+    selected_table = ""
 
     # Caso seja arquivo access:
     if file_type == 'access':
