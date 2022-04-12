@@ -199,7 +199,7 @@ def compara():
     global table1
     global table2
     global selected_table
-
+    global campos
     # Copia os nomes das colunas das tabelas carregadas
     # para os 3 dataframes do relatório
     table_novas = table2[0:0]
@@ -209,20 +209,20 @@ def compara():
     # Preenche o dataframe table_excluidas com as
     # linhas que possuem valores de 'RTUNO' e 'PNTNO'
     # que existem na tabela1 e não na tabela2
-    table_excluidas = table1[~table1.set_index(['RTUNO', 'PNTNO']).index
-                             .isin(table2.set_index(['RTUNO', 'PNTNO']).index)]
+    table_excluidas = table1[~table1.set_index(campos).index
+                             .isin(table2.set_index(campos).index)]
 
     # Preenche o dataframe table_excluidas com as
     # linhas que possuem valores de 'RTUNO' e 'PNTNO'
     # que existem na tabela2 e não na tabela1
-    table_novas = table2[~table2.set_index(['RTUNO', 'PNTNO']).index.
-                         isin(table1.set_index(['RTUNO', 'PNTNO']).index)]
+    table_novas = table2[~table2.set_index(campos).index.
+                         isin(table1.set_index(campos).index)]
 
     # Preenche o dataframe table_discrep1 com as
     # linhas da tabela 1que possuem a combinação
     # de 'RTUNO' e 'PNTNO' e estão presentes nos dois bancos
-    table_discrep1 = table1[table1.set_index(['RTUNO', 'PNTNO']).index.
-                            isin(table2.set_index(['RTUNO', 'PNTNO']).index)]
+    table_discrep1 = table1[table1.set_index(campos).index.
+                            isin(table2.set_index(campos).index)]
     # Copia a table_discrep1 para um dataframe auxiliar
     table_aux = table_discrep1
 
@@ -426,7 +426,11 @@ def select_campos():
         campos[2] = selected_3.get()
         
     def try_compara():
-        if(campos[0] != 'Nenhum' and campos[1] != 'Nenhum' and campos[2] != 'Nenhum'):
+        global campos
+        if(campos[0] != 'Nenhum' or campos[1] != 'Nenhum' or campos[2] != 'Nenhum'):
+            for i in range(3):
+                if campos[i] == 'Nenhum':
+                    del campos[i]
             compara()
         else:
             messagebox.showinfo("ERRO", "SELECIONE UM CAMPO PARA COMPARAÇÃO") 
