@@ -421,7 +421,7 @@ def select_table(file_type):
         try:
             table_obj = openpyxl.load_workbook(path1)
             print("abriu")
-        except:
+        except openpyxl.utils.exceptions.InvalidFileException:
             print("ai realmente não ta abrindo o arquivo antigo")
         # Guarda o nome dos sheets na lista
         output_tables = table_obj.sheetnames
@@ -556,12 +556,12 @@ def organiza_relat(file_path, is_complet):
     try:
         table_obj = openpyxl.load_workbook(file_path)
         print("abriu")
-    except:
+    except openpyxl.utils.exceptions.InvalidFileException:
         try:
             file_path = file_path.replace("/", "\\")
             table_obj = openpyxl.load_workbook(file_path)
             print("abriu aq")
-        except:
+        except openpyxl.utils.exceptions.InvalidFileException:
             print("ai realmente não ta abrindo o arquivo antigo")
 
     # carrega o sheet
@@ -738,7 +738,7 @@ def select_file_export_Relat():
         multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
         try:
             writer.close()
-        except:
+        except IOError:
             pass
         organiza_relat(file_path, 0)
         str_temp = "start EXCEL.EXE " + file_path
@@ -789,7 +789,7 @@ def select_file_export_Complet():
         multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
         try:
             writer.close()
-        except:
+        except IOError:
             pass
         organiza_relat(file_path, 1)
         str_temp = "start EXCEL.EXE " + file_path
