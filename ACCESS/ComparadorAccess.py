@@ -23,7 +23,7 @@ global path2
 path1 = ''
 path2 = ''
 selected_table = ""
-campos = ['Nenhum','Nenhum','Nenhum']
+campos = ['Nenhum', 'Nenhum', 'Nenhum']
 colunas = []
 table1 = pd.DataFrame()
 
@@ -121,6 +121,7 @@ def update_table():
     pt_resul_excluidas.showIndex()
     pt_resul_excluidas.redraw()
 
+
 def load_tables():
     global table_novas
     global table_excluidas
@@ -129,7 +130,7 @@ def load_tables():
     global table1
     global table2
     global selected_table
-    
+
     # Guarda o caminho até a pasta do programa
     os.path.dirname(os.path.realpath(__file__))
 
@@ -187,7 +188,6 @@ def load_tables():
 
         table1 = pd.read_excel(open(file1, 'rb'), sheet_name=selected_table)
         table2 = pd.read_excel(open(file2, 'rb'), sheet_name=selected_table)
-
 
 
 def compara():
@@ -248,8 +248,7 @@ def compara():
     # Tentar tirar as linhas que são iguais esvazia o
     # dataframe na primeira iteração
     table_discrep1 = table_discrep1[~table_discrep1.set_index(
-        campos).index.isin(table_aux.
-                                       set_index(campos).index)]
+        campos).index.isin(table_aux.set_index(campos).index)]
 
     # Preenche o dataframe table_discrep2 com as linhas
     # da tabela 2 que possuem a combinação
@@ -282,8 +281,7 @@ def compara():
     # Tentar tirar as linhas que são iguais esvazia o
     # dataframe na primeira iteração
     table_discrep2 = table_discrep2[~table_discrep2.set_index(
-        campos).index.isin(table_aux.
-                                       set_index(campos).index)]
+        campos).index.isin(table_aux.set_index(campos).index)]
 
     # Verifica se os dataframes que indicam as linhas
     # discrepantes em cada tabela possuem o mesmo tamanho
@@ -422,36 +420,40 @@ root.title("COMPARADOR ACCESS v0.1.2")
 # Maximiza a janela principal
 root.state("zoomed")
 
+
 def select_campos():
-    
+
     # Quando a tabela é selecionada executa a comparação
     def select_1(event):
         global campos
         campos[0] = selected_1.get()
+
     def select_2(event):
         global campos
         campos[1] = selected_2.get()
+
     def select_3(event):
         global campos
         campos[2] = selected_3.get()
-        
+
     def try_compara():
         global campos
-        if(campos[0] != 'Nenhum' or campos[1] != 'Nenhum' or campos[2] != 'Nenhum'):
+        if(campos[0] != 'Nenhum' or campos[1] != 'Nenhum'
+           or campos[2] != 'Nenhum'):
             for i in range(3):
                 if campos[i] == 'Nenhum':
                     del campos[i]
             compara()
         else:
-            messagebox.showinfo("ERRO", "SELECIONE UM CAMPO PARA COMPARAÇÃO") 
-        
+            messagebox.showinfo("ERRO", "SELECIONE UM CAMPO PARA COMPARAÇÃO")
+
     # Cria uma label para indicar que a tabela deve ser selecionada
     label = ttk.Label(text="Selecione os campos de comparação:")
     label.place(x=400, y=0, height=20, width=250)
     global colunas
     colunas = table1.columns.tolist()
-    colunas.insert(0,'Nenhum')
-    
+    colunas.insert(0, 'Nenhum')
+
     selected_1 = tk.StringVar()
     c1_cb = ttk.Combobox(root, width=50, textvariable=selected_1)
     c1_cb['values'] = colunas
@@ -459,7 +461,7 @@ def select_campos():
     c1_cb.pack(fill=tk.X, padx=5, pady=5)
     c1_cb.place(x=400, y=30, height=30, width=200)
     c1_cb.current(0)
-    
+
     selected_2 = tk.StringVar()
     c2_cb = ttk.Combobox(root, width=50, textvariable=selected_2)
     c2_cb['values'] = colunas
@@ -467,7 +469,7 @@ def select_campos():
     c2_cb.pack(fill=tk.X, padx=5, pady=5)
     c2_cb.place(x=630, y=30, height=30, width=200)
     c2_cb.current(0)
-    
+
     selected_3 = tk.StringVar()
     c3_cb = ttk.Combobox(root, width=50, textvariable=selected_3)
     c3_cb['values'] = colunas
@@ -476,18 +478,12 @@ def select_campos():
     c3_cb.place(x=630+230, y=30, height=30, width=200)
     c3_cb.current(0)
 
-    botao_compara = ttk.Button(root,text='COMPARAR',command=try_compara)
-    botao_compara.place(x=630+230+230, y = 30,height = 30, width = 130)
-
-
-
-
+    botao_compara = ttk.Button(root, text='COMPARAR', command=try_compara)
+    botao_compara.place(x=630+230+230, y=30, height=30, width=130)
 
     c1_cb.bind('<<ComboboxSelected>>', select_1)
     c2_cb.bind('<<ComboboxSelected>>', select_2)
     c3_cb.bind('<<ComboboxSelected>>', select_3)
-    
-
 
 
 def select_table(file_type):
