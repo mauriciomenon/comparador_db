@@ -13,8 +13,9 @@ import openpyxl
 from tkinter import ttk, messagebox, filedialog as fd
 from pandastable import Table
 from pandastable import config
-from openpyxl.styles import PatternFill,Font
+from openpyxl.styles import PatternFill, Font
 from openpyxl.styles.borders import Border, Side
+
 
 global path1
 global path2
@@ -47,6 +48,24 @@ def pinta_discrep():
                 pt_resul_discrep.setRowColors(rows=i, clr='#ff0000', cols=[j])
                 pt_resul_discrep.setRowColors(rows=i+1,
                                               clr='#ff0000', cols=[j])
+
+    # Pinta os elementos discrepantes da tabela antiga
+    indexes = table_discrep.index.tolist()
+    for i in range(table_discrep.shape[0]):
+        if i % 2 == 0:
+            pt1.setRowColors(rows=indexes[i]-1, clr='#ff0000', cols=[0, 1])
+        else:
+            pt2.setRowColors(rows=indexes[i]-1, clr='#ff0000', cols=[0, 1])
+
+    # Pinta os elementos novos na tabela nova
+    indexes = table_novas.index.tolist()
+    for i in range(table_novas.shape[0]):
+        pt2.setRowColors(rows=indexes[i]-1, clr='#fa9898', cols=[0, 1])
+
+    # Pinta os elementos excluidos na tabela antiga
+    indexes = table_excluidas.index.tolist()
+    for i in range(table_excluidas.shape[0]):
+        pt1.setRowColors(rows=indexes[i]-1, clr='#98faa7', cols=[0, 1])
 
 
 def update_table():
@@ -117,38 +136,57 @@ def compara():
     file1 = path1
     file2 = path2
 
-    # Seleciona a pasta mdbtools que deve estar na mesma pasta do programa
-    path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
+    # Caso a comparação seja em arquivos access:
+    if file1.endswith('.accdb'):
 
-    # Cria a linha de comando para exportar a tabela
-    # selecionada no arquivo antigo
-    # para um arquivo csv temporario
-    # Funciona somente se o executavel mdb-export.exe existe na pasta mdbtools
-    export_command = path + '\\mdb-export.exe ' + file1
-    export_command += ' '
-    export_command += selected_table + '  > temp.csv'
-    # executa a linha de comando no cmd
-    subprocess.run(['cmd.exe', '/c', export_command])
+        # Seleciona a pasta mdbtools que deve estar na mesma pasta do programa
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
 
-    # importa o arquivo csv em um dataframe do pandas e exclui o arquivo
-    # o encoding é necessário pois na tabela existe um caracter "°"
-    table1 = pd.read_csv('temp.csv', sep=',', encoding='iso-8859-1')
-    os.remove("temp.csv")
+        # Cria a linha de comando para exportar a tabela
+        # selecionada no arquivo antigo
+        # para um arquivo csv temporario
+        # Funciona somente se mdb-export.exe existe na pasta mdbtools
+        export_command = path + '\\mdb-export.exe ' + file1
+        export_command += ' '
+        export_command += selected_table + '  > temp.csv'
+        # executa a linha de comando no cmd
+        subprocess.run(['cmd.exe', '/c', export_command])
 
-    # Cria a linha de comando para exportar a
-    # tabela selecionada no arquivo novo
-    # para um arquivo csv temporario
-    # Funciona somente se o executavel mdb-export.exe existe na pasta mdbtools
-    export_command = path + '\\mdb-export.exe ' + file2
-    export_command += ' '
-    export_command += selected_table + '  > temp.csv'
-    subprocess.run(['cmd.exe', '/c', export_command])
+        # importa o arquivo csv em um dataframe do pandas e exclui o arquivo
+        # o encoding é necessário pois na tabela existe um caracter "°"
+        table1 = pd.read_csv('temp.csv', sep=',', encoding='iso-8859-1')
+        os.remove("temp.csv")
 
-    # importa o arquivo csv em um dataframe
-    # do pandas e exclui o arquivo
-    # o encoding é necessário pois na tabela existe um caracter "°"
-    table2 = pd.read_csv('temp.csv', sep=',', encoding='iso-8859-1')
-    os.remove("temp.csv")
+        # Exclui linhas vazias
+        df2 = table1[table1.isna().all(axis=1)]
+        for i in range(df2.shape[0]):
+            table1 = table1.drop(df2.index[i])
+
+        # Cria a linha de comando para exportar a
+        # tabela selecionada no arquivo novo
+        # para um arquivo csv temporario
+        # Funciona somente se mdb-export.exe existe na pasta mdbtools
+        export_command = path + '\\mdb-export.exe ' + file2
+        export_command += ' '
+        export_command += selected_table + '  > temp.csv'
+        subprocess.run(['cmd.exe', '/c', export_command])
+
+        # importa o arquivo csv em um dataframe
+        # do pandas e exclui o arquivo
+        # o encoding é necessário pois na tabela existe um caracter "°"
+        table2 = pd.read_csv('temp.csv', sep=',', encoding='iso-8859-1')
+        os.remove("temp.csv")
+
+        # Exclui Linhas vazias
+        df2 = table2[table2.isna().all(axis=1)]
+        for i in range(df2.shape[0]):
+            table2 = table2.drop(df2.index[i])
+
+    # Caso a comparação seja em arquivos excel
+    elif file1.endswith('.xlsx'):
+
+        table1 = pd.read_excel(open(file1, 'rb'), sheet_name=selected_table)
+        table2 = pd.read_excel(open(file2, 'rb'), sheet_name=selected_table)
 
     # Copia os nomes das colunas das tabelas carregadas
     # para os 3 dataframes do relatório
@@ -310,14 +348,14 @@ def myinfo():
     str_info += "->FEITO Fazer um pequeno tutorial na aba ajuda\n"
     str_info += "->FEITO Arrumar as opções de exportar\n"
     str_info += "->Fazer uma aba para selecionar o elemento de comparação\n"
-    str_info += "->Fazer uma progressbar \n"
+    str_info += "->NÃO FUNCIONA Fazer uma progressbar \n"
     str_info += "->FEITO Indicar quantas ocorrencias na label\n"
     str_info += "->FEITO Conferir se os arquivos selecionados são access\n"
-    str_info += "->fazer funcionar com xlsx\n"
-    str_info += "-> Fazer pintar as outras duas abas da janela principal"
-    # str_info += ""
-    # str_info += ""
-    # str_info += ""
+    str_info += "->FEITO fazer funcionar com xlsx\n"
+    str_info += "->FEITO Fazer pintar as outras duas abas da janela principal"
+    str_info += "->FEITO Corrigir o bug de ler uma linha em branco"
+    str_info += "->Fazer um try com o driver do access"
+    str_info += "->Pintar relatório não completo"
     # str_info += ""
     # str_info += ""
 
@@ -363,18 +401,30 @@ root.title("COMPARADOR ACCESS v0.1.2")
 root.state("zoomed")
 
 
-def select_table():
+def select_table(file_type):
     # Função para selecionar a tabela
-
+    global table_obj
     # Variável para uma lista das tabelas presentes no arquivo antigo
     global output_tables
 
-    # Cria a linha de comando no cmd que executa o arquivo mdb-tables.exe
-    # e guarda o output na lista
-    path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
-    output_tables = subprocess.check_output(
-        [path + '\\mdb-tables.exe', path1]).decode()
-    output_tables = output_tables.split()
+    # Caso seja arquivo access:
+    if file_type == 'access':
+        # Cria a linha de comando no cmd que executa o arquivo mdb-tables.exe
+        # e guarda o output na lista
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
+        output_tables = subprocess.check_output(
+            [path + '\\mdb-tables.exe', path1]).decode()
+        output_tables = output_tables.split()
+
+    # Caso seja arquivo excel:
+    elif file_type == 'excel':
+        try:
+            table_obj = openpyxl.load_workbook(path1)
+            print("abriu")
+        except:
+            print("ai realmente não ta abrindo o arquivo antigo")
+        # Guarda o nome dos sheets na lista
+        output_tables = table_obj.sheetnames
 
     # Cria uma label para indicar que a tabela deve ser selecionada
     label = ttk.Label(text="Selecione a tabela para comparar:")
@@ -397,8 +447,8 @@ def select_table():
     month_cb.bind('<<ComboboxSelected>>', month_changed)
 
 
-def select_file2():
-    # Função para seleção do banco novo
+def select_file_access2():
+    # Função para seleção do banco novo access
     global path1
     global path2
 
@@ -416,11 +466,11 @@ def select_file2():
 
     if(path1 != "" and path2 != ""):
         # Chama a função para selecionar a tabela
-        select_table()
+        select_table('access')
 
 
-def select_file():
-    # Função de seleção do banco antigo
+def select_file_access():
+    # Função de seleção do banco antigo access
     global path1
     global path2
 
@@ -437,25 +487,73 @@ def select_file():
             break
         # Chama a função para selecionar o banco novo
     if path1 != "":
-        select_file2()
+        select_file_access2()
 
 
-def organiza_relat(file_path,is_complet):
+def select_file_excel2():
+    # Função para seleção do banco novo excell
+    global path1
+    global path2
+
+    while(True):
+        file_types = (('Excel Files', '*.xlsx'), ('All files', '*.*'))
+        file_name = fd.askopenfilename(
+            title='SELECIONAR ARQUIVO NOVO', filetypes=file_types)
+
+        path2 = file_name
+        if file_name.endswith('.xlsx') is False:
+            messagebox.showinfo("ERRO", "SELECIONE UM ARQUIVO EXCEL (.xlsx)")
+            break
+        else:
+            break
+
+    if(path1 != "" and path2 != ""):
+        # Chama a função para selecionar a tabela
+        select_table('excel')
+
+
+def select_file_excel():
+    # Função de seleção do banco antigo excell
+    global path1
+    global path2
+
+    while(True):
+        file_types = (('Excel Files', '*.xlsx'), ('All files', '*.*'))
+        file_name = fd.askopenfilename(title='SELECIONAR ARQUIVO ANTIGO',
+                                       filetypes=file_types)
+
+        path1 = file_name
+        if file_name.endswith('.xlsx') is False:
+            messagebox.showinfo("ERRO", "SELECIONE UM ARQUIVO EXCEL (.xlsx)")
+            break
+        else:
+            break
+        # Chama a função para selecionar o banco novo
+    if path1 != "":
+        select_file_excel2()
+
+
+def organiza_relat(file_path, is_complet):
+    # Função que organiza os arquivos excel exportados
+
     global table_obj
     global table_discrep
     print(file_path)
-    
-        
 
-    cinza = PatternFill(start_color='787878', end_color='787878', fill_type='solid')
-    vermelho = PatternFill(start_color='ff0000', end_color='ff0000', fill_type='solid')
-    vermelho_claro = PatternFill(start_color='fa9696', end_color='fa9696', fill_type='solid')
-    verde = PatternFill(start_color='82e89d', end_color='82e89d', fill_type='solid')
-    borda_fina = Border(left=Side(style='thin'),right=Side(style='thin'),top=Side(style='thin'),bottom=Side(style='thin'))
+    # definições de cores e borda
+    cinza = PatternFill(start_color='787878', end_color='787878',
+                        fill_type='solid')
+    vermelho = PatternFill(start_color='ff0000', end_color='ff0000',
+                           fill_type='solid')
+    vermelho_claro = PatternFill(start_color='fa9696', end_color='fa9696',
+                                 fill_type='solid')
+    verde = PatternFill(start_color='82e89d', end_color='82e89d',
+                        fill_type='solid')
+    borda_fina = Border(left=Side(style='thin'), right=Side(style='thin'),
+                        top=Side(style='thin'), bottom=Side(style='thin'))
 
-
+    # Abre o arquivo exportado
     try:
-       
         table_obj = openpyxl.load_workbook(file_path)
         print("abriu")
     except:
@@ -465,92 +563,114 @@ def organiza_relat(file_path,is_complet):
             print("abriu aq")
         except:
             print("ai realmente não ta abrindo o arquivo antigo")
-    #carrega o sheet        
+
+    # carrega o sheet
     table_sheet_resul_obj = table_obj['RELATÓRIO']
     if is_complet:
         table_sheet_antigo_obj = table_obj[table_obj.sheetnames[0]]
         table_sheet_novo_obj = table_obj[table_obj.sheetnames[1]]
-        
-        for i in range(1,table1.shape[1]):
-            table_sheet_antigo_obj.cell(1,i).fill = cinza
-            table_sheet_novo_obj.cell(1,i).fill = cinza
-        
 
-    #table_sheet_resul_obj.cell(1,1).fill = cinza
-    table_sheet_resul_obj.cell(3,1).value = "LINHAS DISCREPANTES:"
-    table_sheet_resul_obj.cell(3,1).font = Font(bold= True)
-    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3,1).value = "LINHAS ADICIONADAS (presentes somente no arquivo novo):"
-    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3,1).font = Font(bold= True)
-    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1,1).value = "LINHAS EXCLUIDAS(presentes somente no arquivo antigo):"
-    table_sheet_resul_obj.cell(3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1,1).font = Font(bold= True)
+        for i in range(1, table1.shape[1]):
+            table_sheet_antigo_obj.cell(1, i).fill = cinza
+            table_sheet_novo_obj.cell(1, i).fill = cinza
 
+    # Adiciona labels no sheet de relatório
+    table_sheet_resul_obj.cell(3, 1).value = "LINHAS DISCREPANTES:"
+    table_sheet_resul_obj.cell(3, 1).font = Font(bold=True)
+    table_sheet_resul_obj.cell(
+        3+table_discrep.shape[0]+1+3, 1).value = "LINHAS ADICIONADAS "
+    "(presentes somente no arquivo novo):"
+    table_sheet_resul_obj.cell(
+        3+table_discrep.shape[0] + 1 + 3, 1).font = Font(bold=True)
+    table_sheet_resul_obj.cell(
+        3+table_discrep.shape[0]+1+3+table_novas.shape[0]+3+1, 1).value = ""
+    "LINHAS EXCLUIDAS(presentes somente no arquivo antigo):"
+    table_sheet_resul_obj.cell(
+        3+table_discrep.shape[0]+1+3 +
+        table_novas.shape[0]+3+1, 1).font = Font(bold=True)
+    # Retira o grid do relatório
     table_sheet_resul_obj.sheet_view.showGridLines = False
-    
-    for i in range(2,table_discrep.shape[1]+2):
-        table_sheet_resul_obj.cell(4,i).fill = cinza
-    for i in range(2,table_novas.shape[1]+2):    
-        table_sheet_resul_obj.cell(4+table_discrep.shape[0]+3+1,i).fill = cinza
-        table_sheet_resul_obj.cell(4+table_discrep.shape[0]+3+table_novas.shape[0]+3+2,i).fill = cinza
-       # table_sheet_resul_obj.cell(4+,i).fill = cinza
-        
-    for i in range(0,table_discrep.shape[0]):
-        table_sheet_resul_obj.cell(i+5,1).fill = cinza   
-    for i in range(0,table_novas.shape[0]):
-        table_sheet_resul_obj.cell(i+5+table_discrep.shape[0]+4,1).fill = cinza   
-    for i in range(0,table_excluidas.shape[0]):
-        table_sheet_resul_obj.cell(i+5+table_discrep.shape[0]+3+table_novas.shape[0]+5,1).fill = cinza   
-    
-    
-    for i in range(5,table_discrep.shape[0]+5):
-        table_sheet_resul_obj.cell(i,1).value = table_sheet_resul_obj.cell(i,1).value +1
-    for i in range(table_discrep.shape[0]+5+4,table_discrep.shape[0]+5+4+table_novas.shape[0]):
-        table_sheet_resul_obj.cell(i,1).value = table_sheet_resul_obj.cell(i,1).value +1
-    for i in range(table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4,table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4+table_excluidas.shape[0]):
-        table_sheet_resul_obj.cell(i,1).value = table_sheet_resul_obj.cell(i,1).value +1
-    
-    for i in range(2,table_discrep.shape[1]+2):
 
-        for j in range(5,table_discrep.shape[0]+5):
-            
-            table_sheet_resul_obj.cell(j,i).border = borda_fina
+    # Pinta o header do relatorio de cinza
+    for i in range(2, table_discrep.shape[1]+2):
+        table_sheet_resul_obj.cell(4, i).fill = cinza
+    for i in range(2, table_novas.shape[1]+2):
+        table_sheet_resul_obj.cell(
+            4+table_discrep.shape[0]+3+1, i).fill = cinza
+        table_sheet_resul_obj.cell(
+            4+table_discrep.shape[0]+3+table_novas.shape[0]+5, i).fill = cinza
 
-            if j%2 ==1:
-                if i!=2:
-                    if table_sheet_resul_obj.cell(j,i).value != table_sheet_resul_obj.cell(j+1,i).value:
-                        table_sheet_resul_obj.cell(j,i).fill = vermelho
-                        table_sheet_resul_obj.cell(j+1,i).fill = vermelho
-                        if is_complet:
-                            for k in range (1,table_discrep.shape[1]):
-                                table_sheet_antigo_obj.cell(table_sheet_resul_obj.cell(j,1).value,k).fill = vermelho
-                                table_sheet_novo_obj.cell(table_sheet_resul_obj.cell(j+1,1).value,k).fill = vermelho
-            
-    for i in range(2,table_novas.shape[1]+2):
-        for j in range(table_discrep.shape[0]+5+4,table_discrep.shape[0]+5+4+table_novas.shape[0]):
-            table_sheet_resul_obj.cell(j,i).border = borda_fina
-            table_sheet_resul_obj.cell(j,i).fill = vermelho_claro
-            if is_complet:
-                for k in range (1,table_novas.shape[1]):
-                    table_sheet_novo_obj.cell(table_sheet_resul_obj.cell(j,1).value,k).fill = vermelho_claro
-            
-    for i in range(2,table_excluidas.shape[1]+2):
-        for j in range(table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4,table_discrep.shape[0]+5+4+table_novas.shape[0]+ 4+table_excluidas.shape[0]):
-            table_sheet_resul_obj.cell(j,i).border = borda_fina
-            table_sheet_resul_obj.cell(j,i).fill = verde
-            if is_complet:
-                for k in range (1,table_excluidas.shape[1]):
-                    table_sheet_antigo_obj.cell(table_sheet_resul_obj.cell(j,1).value,k).fill = verde
-            
-# =============================================================================
-#     dims = {}
-#     for row in table_sheet_resul_obj.rows:
-#         for cell in row:
-#             if cell.value:
-#                 dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))    
-#        
-#     for i, column_width in dims.items():  # ,1 to start at 1
-#         table_sheet_resul_obj.column_dimensions[get_column_letter(i)].width = int(math.ceil(column_width*1.42))
-#             
-# =============================================================================
+    # Pinta os indices do relatório de cinza
+    for i in range(0, table_discrep.shape[0]):
+        table_sheet_resul_obj.cell(i+5, 1).fill = cinza
+    for i in range(0, table_novas.shape[0]):
+        table_sheet_resul_obj.cell(i+table_discrep.shape[0]+9, 1).fill = cinza
+    for i in range(0, table_excluidas.shape[0]):
+        table_sheet_resul_obj.cell(
+            i+table_discrep.shape[0]+8+table_novas.shape[0]+5, 1).fill = cinza
+
+    # Corrige os idices do relatório devido ao dataframe iniciar em 0
+    for i in range(5, table_discrep.shape[0]+5):
+        table_sheet_resul_obj.cell(i, 1).value = table_sheet_resul_obj.cell(
+            i, 1).value + 1
+    for i in range(table_discrep.shape[0]+5+4,
+                   table_discrep.shape[0]+5+4+table_novas.shape[0]):
+        table_sheet_resul_obj.cell(
+            i, 1).value = table_sheet_resul_obj.cell(i, 1).value + 1
+    for i in range(table_discrep.shape[0]+5+4+table_novas.shape[0]+4,
+                   table_discrep.shape[0]+5+4+table_novas.shape[0] +
+                   4+table_excluidas.shape[0]):
+        table_sheet_resul_obj.cell(
+            i, 1).value = table_sheet_resul_obj.cell(i, 1).value + 1
+
+    # se for uma exportação completa com os 3 sheets
+    if is_complet:
+        # Pinta as linhas discrepantes de vermelho
+        for i in range(2, table_discrep.shape[1]+2):
+            for j in range(5, table_discrep.shape[0]+5):
+                table_sheet_resul_obj.cell(j, i).border = borda_fina
+
+                if j % 2 == 1:
+                    if i != 2:
+                        if table_sheet_resul_obj.cell(
+                                j, i).value != table_sheet_resul_obj.cell(
+                                    j+1, i).value:
+                            table_sheet_resul_obj.cell(j, i).fill = vermelho
+                            table_sheet_resul_obj.cell(j+1, i).fill = vermelho
+                            if is_complet:
+                                for k in range(1, table_discrep.shape[1]):
+                                    table_sheet_antigo_obj.cell(
+                                        table_sheet_resul_obj.cell(
+                                            j, 1).value, k).fill = vermelho
+                                    table_sheet_novo_obj.cell(
+                                        table_sheet_resul_obj.cell(
+                                            j+1, 1).value, k).fill = vermelho
+
+        # Pinta as linhas novas de vermelho claro
+        for i in range(2, table_novas.shape[1]+2):
+            for j in range(table_discrep.shape[0]+5+4,
+                           table_discrep.shape[0]+5+4+table_novas.shape[0]):
+                table_sheet_resul_obj.cell(j, i).border = borda_fina
+                table_sheet_resul_obj.cell(j, i).fill = vermelho_claro
+                if is_complet:
+                    for k in range(1, table_novas.shape[1]):
+                        table_sheet_novo_obj.cell(
+                            table_sheet_resul_obj.cell(
+                                j, 1).value, k).fill = vermelho_claro
+
+        # Pinta as linhas excluidas de verde
+        for i in range(2, table_excluidas.shape[1]+2):
+            for j in range(table_discrep.shape[0] + 9 + table_novas.shape[0]
+                           + 4, table_discrep.shape[0]+5+4+table_novas.shape[0]
+                           + 4 + table_excluidas.shape[0]):
+                table_sheet_resul_obj.cell(j, i).border = borda_fina
+                table_sheet_resul_obj.cell(j, i).fill = verde
+                if is_complet:
+                    for k in range(1, table_excluidas.shape[1]):
+                        table_sheet_antigo_obj.cell(
+                            table_sheet_resul_obj.cell(
+                                j, 1).value, k).fill = verde
+
     table_obj.save(file_path)
 
 
@@ -601,12 +721,13 @@ def select_file_export_Relat():
         if file_path.endswith('.xlsx') is False:
             file_path += '.xlsx'
         writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
+
         def multiple_dfs(df_list, sheets, file_name, spaces):
             row = 3
             for dataframe in df_list:
                 dataframe.to_excel(writer, sheet_name=sheets,
                                    startrow=row, startcol=0,
-                                   index=True)#, header=False)
+                                   index=True)
                 row = row + len(dataframe.index) + spaces + 1
             writer.save()
 
@@ -619,7 +740,7 @@ def select_file_export_Relat():
             writer.close()
         except:
             pass
-        organiza_relat(file_path,0)
+        organiza_relat(file_path, 0)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
 
@@ -670,7 +791,7 @@ def select_file_export_Complet():
             writer.close()
         except:
             pass
-        organiza_relat(file_path,1)
+        organiza_relat(file_path, 1)
         str_temp = "start EXCEL.EXE " + file_path
         os.system(str_temp)
 
@@ -680,9 +801,9 @@ menubar = tk.Menu(root)
 
 filemenu = tk.Menu(menubar, tearoff=0)
 filemenu.add_command(label="SELECIONAR ARQUIVO ACCESS (.accdb)",
-                     command=select_file)
+                     command=select_file_access)
 filemenu.add_command(label="SELECIONAR ARQUIVO EXCEL (.xlsx)",
-                     command=select_file)
+                     command=select_file_excel)
 filemenu.add_command(label="SAIR", command=close_root)
 helpmenu = tk.Menu(menubar, tearoff=0)
 helpmenu.add_command(label="Como usar", command=show_tutorial)
