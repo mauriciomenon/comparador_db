@@ -9,5 +9,6 @@ O algoritmo consegue realizar a comparação mesmo com colunas em ordens diferen
 <br />
 <br />
 
-#### Na pasta 'MACRO_VBA' existe um macro que realiza as comparações diretamente no excel, o funcionamento é básico e não suporte nenhuma mudança nas tabelas originais utilizadas para teste. <br />
+
+####Code Blocks (Indented style)
 
