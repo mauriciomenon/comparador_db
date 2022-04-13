@@ -9,5 +9,5 @@ O algoritmo consegue realizar a comparação mesmo com colunas em ordens diferen
 <br />
 <br />
 
-####Javascript
+###Code Blocks (multi-language) & highlighting
 
