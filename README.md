@@ -24,8 +24,8 @@ O programa é capaz de exportar as tabelas carregadas e o relatório dos resulta
 Para ajuda de como o programa funciona existe um tutorial presente no menu 'ajuda'.
 
 ### Bibliotecas necessárias:
-`$ pip install subprocess`
-`$ pip install pandas`
-`$ pip install tkinter`
-`$ pip install openpyxl`
-`$ pip install pandastable`
+`$ pip install subprocess`<br />
+`$ pip install pandas`<br />
+`$ pip install tkinter`<br />
+`$ pip install openpyxl`<br />
+`$ pip install pandastable`<br />
