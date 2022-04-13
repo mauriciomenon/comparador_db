@@ -25,3 +25,7 @@ Para ajuda de como o programa funciona existe um tutorial presente no menu 'ajud
 
 ### Bibliotecas necessárias:
 `$ pip install subprocess`
+`$ pip install pandas`
+`$ pip install tkinter`
+`$ pip install openpyxl`
+`$ pip install pandastable`
