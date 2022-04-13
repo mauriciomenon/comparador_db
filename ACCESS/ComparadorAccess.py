@@ -445,11 +445,11 @@ def select_campos():
         if(campos[0] != 'Nenhum' or campos[1] != 'Nenhum'
            or campos[2] != 'Nenhum'):
             campos = list(dict.fromkeys(campos))
-            print(campos)
+
             for i in range(len(campos)):
                 if campos[i] == 'Nenhum':
                     del campos[i]
-            print(campos)
+
             compara()
         else:
             messagebox.showinfo("ERRO", "SELECIONE UM CAMPO PARA COMPARAÇÃO")
@@ -514,7 +514,7 @@ def select_table(file_type):
     elif file_type == 'excel':
         try:
             table_obj = openpyxl.load_workbook(path1)
-            print("abriu")
+
         except openpyxl.utils.exceptions.InvalidFileException:
             print("ai realmente não ta abrindo o arquivo antigo")
         # Guarda o nome dos sheets na lista
@@ -633,7 +633,6 @@ def organiza_relat(file_path, is_complet):
 
     global table_obj
     global table_discrep
-    print(file_path)
 
     # definições de cores e borda
     cinza = PatternFill(start_color='787878', end_color='787878',
@@ -650,12 +649,12 @@ def organiza_relat(file_path, is_complet):
     # Abre o arquivo exportado
     try:
         table_obj = openpyxl.load_workbook(file_path)
-        print("abriu")
+
     except openpyxl.utils.exceptions.InvalidFileException:
         try:
             file_path = file_path.replace("/", "\\")
             table_obj = openpyxl.load_workbook(file_path)
-            print("abriu aq")
+
         except openpyxl.utils.exceptions.InvalidFileException:
             print("ai realmente não ta abrindo o arquivo antigo")
 
