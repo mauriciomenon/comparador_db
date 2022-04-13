@@ -9,6 +9,5 @@ O algoritmo consegue realizar a comparação mesmo com colunas em ordens diferen
 <br />
 <br />
 
-#H1 header
-#Code Blocks (multi-language) & highlighting
+# Features
 
