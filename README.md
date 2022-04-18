@@ -23,7 +23,7 @@ Da maneira que está configurado, o algoritmo utiliza dos executáveis da pasta 
 O programa é capaz de exportar as tabelas carregadas e o relatório dos resultados para arquivos Excel (.xlsx) utilizando o menu exportar, caso o Excel esteja instalado na máquina o arquivo abre automaticamente. <br />
 Para ajuda de como o programa funciona existe um tutorial presente no menu 'ajuda'.
 
-### Bibliotecas necessárias:
+### Pacotes necessários:
 `$ pip install subprocess`<br />
 `$ pip install pandas`<br />
 `$ pip install tkinter`<br />
