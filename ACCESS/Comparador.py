@@ -367,21 +367,6 @@ def myinfo():
     str_info += "O algoritmo compara duas tabelas em arquivos access"
     str_info += "excluidas,novas e discrepantes"
 # TODO:*
-    str_info += "\nTODO:\n"
-    str_info += "->FEITO Fazer um pequeno tutorial na aba ajuda\n"
-    str_info += "->FEITO Arrumar as opções de exportar\n"
-    str_info += "->FEITO (Não testado totalmente) Fazer uma aba para selecionar o elemento de comparação\n"
-    str_info += "->NÃO FUNCIONA Fazer uma progressbar \n"
-    str_info += "->FEITO Indicar quantas ocorrencias na label\n"
-    str_info += "->FEITO Conferir se os arquivos selecionados são access\n"
-    str_info += "->FEITO fazer funcionar com xlsx\n"
-    str_info += "->FEITO Fazer pintar as outras duas abas da janela principal"
-    str_info += "->FEITO Corrigir o bug de ler uma linha em branco"
-    str_info += "->Fazer um try com o driver do access"
-    str_info += "->FEITO Pintar relatório não completo"
-    str_info += "->Comparações em sequencia"
-    # str_info += ""
-
     messagebox.showinfo("Info", str_info)
 
 
@@ -425,22 +410,31 @@ root.state("zoomed")
 
 def select_campos():
     global campos
-    campos = ['Nenhum', 'Nenhum', 'Nenhum']
-    # Quando a tabela é selecionada executa a comparação
-    def select_1(event):
-        global campos
-        campos[0] = selected_1.get()
+    def reset_campos():
+        while len(campos) != 3:
+            campos.append('Nenhum')
+            
+    # # Quando a tabela é selecionada executa a comparação
+    # def select_1(event):
+    #     global campos
+    #     campos[0] = selected_1.get()
 
-    def select_2(event):
-        global campos
-        campos[1] = selected_2.get()
+    # def select_2(event):
+    #     global campos
+    #     campos[1] = selected_2.get()
 
-    def select_3(event):
-        global campos
-        campos[2] = selected_3.get()
+    # def select_3(event):
+    #     global campos
+    #     campos[2] = selected_3.get()
 
     def try_compara():
         global campos
+        reset_campos()
+        #campos = ['Nenhum', 'Nenhum', 'Nenhum']
+
+        campos[0] = selected_1.get()
+        campos[1] = selected_2.get()
+        campos[2] = selected_3.get()
 
         if(campos[0] != 'Nenhum' or campos[1] != 'Nenhum'
            or campos[2] != 'Nenhum'):
@@ -488,9 +482,9 @@ def select_campos():
     botao_compara = ttk.Button(root, text='COMPARAR', command=try_compara)
     botao_compara.place(x=630+230+230, y=30, height=30, width=130)
 
-    c1_cb.bind('<<ComboboxSelected>>', select_1)
-    c2_cb.bind('<<ComboboxSelected>>', select_2)
-    c3_cb.bind('<<ComboboxSelected>>', select_3)
+    # c1_cb.bind('<<ComboboxSelected>>', select_1)
+    # c2_cb.bind('<<ComboboxSelected>>', select_2)
+    # c3_cb.bind('<<ComboboxSelected>>', select_3)
 
 
 def select_table(file_type):
