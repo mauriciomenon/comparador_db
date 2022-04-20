@@ -75,19 +75,22 @@ def pinta_discrep():
 def clear_table():
 
     pt_resul_discrep.model.df = df
-    pt_resul_discrep.autoResizeColumns()
     pt_resul_discrep.redraw()
-    # pt_resul_discrep.showIndex()
+    pt_resul_discrep.autoResizeColumns()
+    pt_resul_discrep.showIndex()
+    pt_resul_discrep.redraw()
     lbl_discrep.configure(text="LINHAS DISCREPANTES: ")
 
     pt_resul_novas.model.df = df
-    pt_resul_novas.autoResizeColumns()
     pt_resul_novas.redraw()
+    pt_resul_novas.autoResizeColumns()
     pt_resul_novas.showIndex()
+    pt_resul_novas.redraw()
     lbl_novas.configure(text="LINHAS ADICIONADAS (presentes somente no "
                              "arquivo novo): ")
 
     pt_resul_excluidas.model.df = df
+    pt_resul_excluidas.redraw()
     pt_resul_excluidas.autoResizeColumns()
     pt_resul_excluidas.redraw()
     pt_resul_excluidas.showIndex()
