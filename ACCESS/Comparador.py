@@ -431,7 +431,7 @@ width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 # Faz com que a janela principal tenha o tamanho igual a resolução
 root.geometry("%dx%d" % (width, height))
-root.title("COMPARADOR ACCESS v0.2")
+root.title("COMPARADOR ACCESS v0.2.1")
 # Maximiza a janela principal
 root.state("zoomed")
 
