@@ -417,10 +417,47 @@ def close_root():
 # dataframe temporário para exibir linhas em branco ao iniciar o programa
 # Unicamente estético, não altera performance
 df = pd.DataFrame({
-    'A': ['', '', '', '', '', ''],
-    'B': ['', '', '', '', '', ''],
-    'C': ['', '', '', '', '', ''],
-    'D': ['', '', '', '', '', ''],
+    'A': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'B': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'C': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'D': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'E': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'F': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'G': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'H': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'I': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'J': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'K': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'L': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'M': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'N': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'O': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'P': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'Q': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'R': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'S': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+    'T': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+          '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+
 })
 
 # CRIA A JANELA PRINCIPAL
@@ -985,7 +1022,7 @@ lbl_discrep.place(x=0, y=0, height=22, width=width)
 # Adiciona um frame para exibir as linhas discrepantes
 frame_resul_discrep = tk.Frame(tab1)
 frame_resul_discrep.place(x=0, y=20,
-                          height=(height/1.7)-178, width=width)
+                          height=(height/4.5), width=width)
 pt_resul_discrep = Table(frame_resul_discrep)
 pt_resul_discrep.model.df = df
 options = {
@@ -1002,18 +1039,18 @@ pt_resul_discrep.redraw()
 lbl_novas = ttk.Label(tab1, text="LINHAS ADICIONADAS "
                       "(presentes somente no arquivo novo):",
                       font='Helvetica 12 bold')
-lbl_novas.place(x=0, y=(height/1.7)-178+25,
+lbl_novas.place(x=0, y=(height/4.5)+25,
                 height=22, width=width)
 
 # Adiciona um frame para exibir as linhas novas
 frame_resul_novas = tk.Frame(tab1)
-frame_resul_novas.place(x=0, y=(height/1.7)-178+45,
-                        height=(height/2.86)-178, width=width)
+frame_resul_novas.place(x=0, y=(height/4.5)+25+25,
+                        height=(height/4.5), width=width)
 pt_resul_novas = Table(frame_resul_novas)
 pt_resul_novas.model.df = df
 options = {
-    'rowselectedcolor': '#fa9898',
-    'cellbackgr': '#fa9898',
+    'rowselectedcolor': '#ffbdbd',
+    'cellbackgr': '#ffbdbd',
     'textcolor': 'black'}
 config.apply_options(options, pt_resul_novas)
 pt_resul_novas.show()
@@ -1025,18 +1062,18 @@ lbl_excluidas = ttk.Label(tab1,
                           text="LINHAS EXCLUIDAS "
                           "(presentes somente no arquivo antigo):",
                           font='Helvetica 12 bold')
-lbl_excluidas.place(x=0, y=((height/1.26)-178), height=22, width=width)
+lbl_excluidas.place(x=0, y=((height/4.5)*2+25+30), height=22, width=width)
 
 # Adiciona um frame para exibir as linhas excluidas
 frame_resul_excluidas = tk.Frame(tab1)
-frame_resul_excluidas.place(x=0, y=(height/1.26)-178+25,
-                            height=(height/2.86)-178, width=width)
+frame_resul_excluidas.place(x=0, y=(height/4.5)*2+25+25+30,
+                            height=(height/4.5), width=width)
 pt_resul_excluidas = Table(frame_resul_excluidas)
 
 pt_resul_excluidas.model.df = df
 options = {
-    'cellbackgr': '#98faa7',
-    'rowselectedcolor': '#98faa7',
+    'cellbackgr': '#baf5c3',
+    'rowselectedcolor': '#baf5c3',
     # 'colheadercolor': '#f71616',
     'gridcolor': 'black',
     'textcolor': 'black'}
