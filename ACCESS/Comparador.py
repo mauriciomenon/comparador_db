@@ -225,7 +225,7 @@ def load_tables():
         # o encoding é necessário pois na tabela existe um caracter "°"
         table2 = pd.read_csv('temp2.csv', sep=',', encoding='iso-8859-1')
         os.remove("temp2.csv")
-        print("tempo para importar " + str((time.time() - start)))
+        #print("tempo para importar " + str((time.time() - start)))
         # Exclui Linhas vazias
         df2 = table2[table2.isna().all(axis=1)]
         for i in range(df2.shape[0]):
@@ -272,22 +272,26 @@ def compara():
     table_discrep1 = table1[table1.set_index(campos).index.
                             isin(table2.set_index(campos).index)]
     # Copia a table_discrep1 para um dataframe auxiliar
-    table_aux = table_discrep1
+    table_aux = table1[table1.set_index(table1.columns.tolist()).index.isin(table2.set_index(table1.columns.tolist()).index)]
 
     # Mantem no dataframe auxiliar as linhas
     # que possuem todos as colunas iguais na tabela2
-    col_test = campos
-    for col in table1.columns:
-        flag = 0
-        for i in range(len(campos)):
-            if campos[i] != col:
-                flag += 1
-        if flag == len(campos):
-            col_test.append(col)
-            table_aux = table_aux[table_aux.set_index(col_test).index.
-                                  isin(table2.set_index(col_test).index)]
-            del col_test[len(campos)-1]
+    # col_test = campos
+    # start = time.time()
 
+    # for col in table1.columns:
+    #     flag = 0
+    #     for i in range(len(campos)):
+    #         if campos[i] != col:
+    #             flag += 1
+    #     if flag == len(campos):
+    #         col_test.append(col)
+    #         table_aux = table_aux[table_aux.set_index(col_test).index.
+    #                               isin(table2.set_index(col_test).index)]
+    #         del col_test[len(campos)-1]
+    # print("tempo para comparar " + str((time.time() - start)))
+    ########table_aux = table1[table1.set_index(table1.columns.tolist()).index.isin(table2.set_index(table1.columns.tolist()).index)]
+        
     # Mantem no dataframe table_discrep1 somente as
     # linhas que estão no datafame table_discrep1 e
     # não estão no dataframe table_aux, gerando assim
@@ -305,21 +309,28 @@ def compara():
                             isin(table1.set_index(campos).index)]
 
     # Copia a table_discrep1 para um dataframe auxiliar
-    table_aux = table_discrep2
+    # table_aux = table_discrep2
 
     # Mantem no dataframe auxiliar as linhas que possuem
     # todos as colunas iguais na tabela2
-    col_test = campos
-    for col in table2.columns:
-        flag = 0
-        for i in range(len(campos)):
-            if campos[i] != col:
-                flag += 1
-        if flag == len(campos):
-            col_test.append(col)
-            table_aux = table_aux[table_aux.set_index(col_test).index.
-                                  isin(table1.set_index(col_test).index)]
-            del col_test[len(campos)-1]
+    start = time.time()
+    #col_test = campos
+    # for col in table2.columns:
+    #     flag = 0
+
+
+    #     for i in range(len(campos)):
+    #         if campos[i] != col:
+    #             flag += 1
+    #     if flag == len(campos):
+    #         col_test.append(col)
+    #         table_aux = table_aux[table_aux.set_index(col_test).index.
+    #                               isin(table1.set_index(col_test).index)]
+    #         del col_test[len(campos)-1]
+    #tabela_9 = tabela_1[tabela_1.set_index(['Nome','Sobrenome','Telefone','Carros','altura']).index.isin(tabela_2.set_index(['Nome','Sobrenome','Telefone','Carros','altura']).index)]
+    table_aux = table2[table2.set_index(table1.columns.tolist()).index.isin(table1.set_index(table1.columns.tolist()).index)]
+
+    print("tempo para comparar " + str((time.time() - start)))
 
     # Mantem no dataframe table_discrep1 somente as linhas
     # que estão no datafame table_discrep1 e
@@ -800,7 +811,7 @@ if __name__ == '__main__':
             for i in range(2, table_discrep.shape[1]+2):
                 for j in range(5, table_discrep.shape[0]+5):
                     table_sheet_resul_obj.cell(j, i).border = borda_fina
-    
+
                     if j % 2 == 1:
                         if i != 2:
                             if table_sheet_resul_obj.cell(
@@ -816,7 +827,7 @@ if __name__ == '__main__':
                                         table_sheet_novo_obj.cell(
                                             table_sheet_resul_obj.cell(
                                                 j+1, 1).value, k).fill = vermelho
-    
+
             # Pinta as linhas novas de vermelho claro
             for i in range(2, table_novas.shape[1]+2):
                 for j in range(table_discrep.shape[0]+5+4,
@@ -828,7 +839,7 @@ if __name__ == '__main__':
                             table_sheet_novo_obj.cell(
                                 table_sheet_resul_obj.cell(
                                     j, 1).value, k).fill = vermelho_claro
-    
+
             # Pinta as linhas excluidas de verde
             for i in range(2, table_excluidas.shape[1]+2):
                 for j in range(table_discrep.shape[0] + 9 + table_novas.shape[0]
@@ -841,10 +852,9 @@ if __name__ == '__main__':
                             table_sheet_antigo_obj.cell(
                                 table_sheet_resul_obj.cell(
                                     j, 1).value, k).fill = verde
-    
+
         table_obj.save(file_path)
-    
-    
+
     def select_file_export_Antiga():
         # Função que exporta a tabela antiga para um arquivo Excel xlsx
         global selected_table
@@ -860,8 +870,8 @@ if __name__ == '__main__':
                             sheet_name=selected_table, index=False)
             str_temp = "start EXCEL.EXE " + file_path
             os.system(str_temp)
-    
-    
+
+
     def select_file_export_Nova():
         # Função que exporta a tabela nova para um arquivo Excel xlsx
         global selected_table
@@ -878,8 +888,7 @@ if __name__ == '__main__':
                             sheet_name=selected_table, index=False)
             str_temp = "start EXCEL.EXE " + file_path
             os.system(str_temp)
-    
-    
+
     def select_file_export_Relat():
         # Função que exporto relatório para um arquivo Excel xlsx
         global selected_table
@@ -892,7 +901,7 @@ if __name__ == '__main__':
             if file_path.endswith('.xlsx') is False:
                 file_path += '.xlsx'
             writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
-    
+
             def multiple_dfs(df_list, sheets, file_name, spaces):
                 row = 3
                 for dataframe in df_list:
@@ -901,10 +910,10 @@ if __name__ == '__main__':
                                        index=True)
                     row = row + len(dataframe.index) + spaces + 1
                 writer.save()
-    
+
             # list of dataframes
             dfs = [table_discrep, table_novas, table_excluidas]
-    
+
             # run function
             multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
             try:
@@ -914,8 +923,7 @@ if __name__ == '__main__':
             organiza_relat(file_path, 0)
             str_temp = "start EXCEL.EXE " + file_path
             os.system(str_temp)
-    
-    
+
     def select_file_export_Complet():
         # Função que exporta tudo para um arquivo Excel xlsx
         global selected_table
@@ -944,7 +952,7 @@ if __name__ == '__main__':
                             sheet_name=path_1, index=False)
             table2.to_excel(writer,
                             sheet_name=path_2, index=False)
-    
+
             def multiple_dfs(df_list, sheets, file_name, spaces):
                 row = 3
                 for dataframe in df_list:
@@ -952,10 +960,10 @@ if __name__ == '__main__':
                                        startrow=row, startcol=0, index=True)
                     row = row + len(dataframe.index) + spaces + 1
                 writer.save()
-    
+
             # list of dataframes
             dfs = [table_discrep, table_novas, table_excluidas]
-    
+
             # run function
             multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
             try:
@@ -965,11 +973,10 @@ if __name__ == '__main__':
             organiza_relat(file_path, 1)
             str_temp = "start EXCEL.EXE " + file_path
             os.system(str_temp)
-    
-    
+
     # Adiciona um menu a janela principal
     menubar = tk.Menu(root)
-    
+
     filemenu = tk.Menu(menubar, tearoff=0)
     filemenu.add_command(label="SELECIONAR ARQUIVO ACCESS (.accdb)",
                          command=select_file_access)
@@ -993,13 +1000,13 @@ if __name__ == '__main__':
     colore.set(False)
     optionsmenu.add_checkbutton(label='Colorir Ocorrencias',
                                 onvalue=1, offvalue=0, variable=colore)
-    
+
     menubar.add_cascade(label="Arquivo", menu=filemenu)
     menubar.add_cascade(label="Exportar", menu=exportmenu)
     menubar.add_cascade(label="Opções", menu=optionsmenu)
     menubar.add_cascade(label="Ajuda", menu=helpmenu)
     root.config(menu=menubar)
-    
+
     # Cria 3 abas na janela principal para exibir as tabelas e o relatório
     tabControl = ttk.Notebook(root)
     tabControl.place(x=0, y=70, height=height, width=width)
@@ -1009,7 +1016,7 @@ if __name__ == '__main__':
     tabControl.add(tab1, text='RELATÓRIO')
     tabControl.add(tab2, text='ARQUIVO ANTIGO')
     tabControl.add(tab3, text='ARQUIVO NOVO')
-    
+
     # Adiciona o frame da tabela antiga na aba 'arquivo antigo'
     frame1 = tk.Frame(tab2)
     frame1.place(x=0, y=0, height=height-178, width=width)
@@ -1019,7 +1026,7 @@ if __name__ == '__main__':
     pt1.show()
     pt1.autoResizeColumns()
     pt1.redraw()
-    
+
     # Adiciona o frame da tabela nova na aba 'arquivo novo'
     frame2 = tk.Frame(tab3)
     frame2.place(x=0, y=0, height=height-178, width=width)
@@ -1030,12 +1037,12 @@ if __name__ == '__main__':
     pt2.autoResizeColumns()
     pt2.autoResizeColumns()
     pt2.redraw()
-    
+
     # Label das linhas discrepantes
     lbl_discrep = ttk.Label(tab1, text="LINHAS DISCREPANTES:",
                             font='Helvetica 12 bold')
     lbl_discrep.place(x=0, y=0, height=22, width=width)
-    
+
     # Adiciona um frame para exibir as linhas discrepantes
     frame_resul_discrep = tk.Frame(tab1)
     frame_resul_discrep.place(x=0, y=20,
@@ -1050,15 +1057,14 @@ if __name__ == '__main__':
     pt_resul_discrep.show()
     pt_resul_discrep.autoResizeColumns()
     pt_resul_discrep.redraw()
-    
-    
+
     # Label das linhas novas
     lbl_novas = ttk.Label(tab1, text="LINHAS ADICIONADAS "
                           "(presentes somente no arquivo novo):",
                           font='Helvetica 12 bold')
     lbl_novas.place(x=0, y=(height/4.5)+25,
                     height=22, width=width)
-    
+
     # Adiciona um frame para exibir as linhas novas
     frame_resul_novas = tk.Frame(tab1)
     frame_resul_novas.place(x=0, y=(height/4.5)+25+25,
@@ -1073,20 +1079,20 @@ if __name__ == '__main__':
     pt_resul_novas.show()
     pt_resul_novas.autoResizeColumns()
     pt_resul_novas.redraw()
-    
+
     # Label das linhas excluidas
     lbl_excluidas = ttk.Label(tab1,
                               text="LINHAS EXCLUIDAS "
                               "(presentes somente no arquivo antigo):",
                               font='Helvetica 12 bold')
     lbl_excluidas.place(x=0, y=((height/4.5)*2+25+30), height=22, width=width)
-    
+
     # Adiciona um frame para exibir as linhas excluidas
     frame_resul_excluidas = tk.Frame(tab1)
     frame_resul_excluidas.place(x=0, y=(height/4.5)*2+25+25+30,
                                 height=(height/4.5), width=width)
     pt_resul_excluidas = Table(frame_resul_excluidas)
-    
+
     pt_resul_excluidas.model.df = df
     options = {
         'cellbackgr': '#baf5c3',
@@ -1098,11 +1104,9 @@ if __name__ == '__main__':
     pt_resul_excluidas.autoResizeColumns()
     pt_resul_excluidas.show()
     pt_resul_excluidas.redraw()
-    
-    
+
     # Comando quando a janela é fechada
     root.protocol("WM_DELETE_WINDOW", close_root)
-    
-    
+
     # Loop janela principal
     root.mainloop()
