@@ -1,8 +1,14 @@
+
 # PROGRAMA EM PYTHON PARA FAZER COMPARAÇÃO DE TABELAS EM ARQUIVOS ACCESS .accdb
 # Autor: Rafael Henrique da Rosa
 # Estagiário Divisão de Engenharia de Manutenção
 # Eletrônica (SMIN.DT) - Itaipu Binacional
 # Abril de 2022
+
+# TODO:*
+# Filtragem de texto (pesquisa)
+# Tirar a opção de colorir de um menu
+
 
 import subprocess
 import pandas as pd
@@ -14,7 +20,7 @@ from pandastable import Table
 from pandastable import config
 from openpyxl.styles import PatternFill, Font
 from openpyxl.styles.borders import Border, Side
-from multiprocessing import Process
+import multiprocessing
 
 
 global colore
@@ -163,7 +169,9 @@ def process_importa_antigo(path, file1, selected_table):
     export_command += ' '
     export_command += selected_table + '  > temp1.csv'
     # executa a linha de comando no cmd
-    subprocess.run(['cmd.exe', '/c', export_command])
+    subprocess.run(['cmd.exe', '/c', export_command], shell=True,
+                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                   stdin=subprocess.PIPE)
 
 
 def process_importa_novo(path, file2, selected_table):
@@ -172,7 +180,10 @@ def process_importa_novo(path, file2, selected_table):
     export_command = path + '\\mdb-export.exe ' + file2
     export_command += ' '
     export_command += selected_table + '  > temp2.csv'
-    subprocess.run(['cmd.exe', '/c', export_command])
+    # subprocess.run(['cmd.exe', '/c', export_command])
+    subprocess.run(['cmd.exe', '/c', export_command], shell=True,
+                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                   stdin=subprocess.PIPE)
 
 
 def load_tables():
@@ -184,24 +195,21 @@ def load_tables():
     global table2
     global selected_table
 
-    # Guarda o caminho até a pasta do programa
-    os.path.dirname(os.path.realpath(__file__))
-
     file1 = path1
     file2 = path2
 
     # Caso a comparação seja em arquivos access:
     if file1.endswith('.accdb'):
         # Seleciona a pasta mdbtools que deve estar na mesma pasta do programa
-        path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
+        path = os.getcwd() + "\\mdbtools"
 
         if __name__ == '__main__':
             # Cria dois processos para importar os arquivos
-            p1 = Process(
+            p1 = multiprocessing.Process(
                 target=process_importa_antigo,
                 args=(path, file1, selected_table))
             p1.start()
-            p2 = Process(
+            p2 = multiprocessing.Process(
                 target=process_importa_novo,
                 args=(path, file2, selected_table))
             p2.start()
@@ -210,8 +218,12 @@ def load_tables():
             p2.join()
         # importa o arquivo csv em um dataframe do pandas e exclui o arquivo
         # o encoding é necessário pois na tabela existe um caracter "°"
-        table1 = pd.read_csv('temp1.csv', sep=',', encoding='iso-8859-1')
-        os.remove("temp1.csv")
+        try:
+            table1 = pd.read_csv('temp1.csv', sep=',', encoding='iso-8859-1')
+            os.remove("temp1.csv")
+        except Exception:
+            messagebox.showinfo(
+                "ERRO", "nao encontrou aquivo csv")
 
         # Exclui linhas vazias
         df2 = table1[table1.isna().all(axis=1)]
@@ -381,13 +393,15 @@ def compara():
 
 # Execuções na main
 if __name__ == '__main__':
+    multiprocessing.freeze_support()
+
     def myinfo():
         # Função que mostra as informações do algoritmo
         str_info = "Autor: Rafael Henrique da Rosa\n"
         str_info += "Estagiário Itaipu Binacional- SMIN.DT - Abril de 2022\n"
         str_info += "O algoritmo compara duas tabelas em arquivos access"
         str_info += "excluidas,novas e discrepantes"
-    # TODO:*
+
         messagebox.showinfo("Info", str_info)
 
     def show_tutorial():
@@ -542,7 +556,9 @@ if __name__ == '__main__':
         if file_type == 'access':
             # Cria a linha de comando no cmd que executa o arquivo mdb-tables
             # e guarda o output na lista
-            path = os.path.dirname(os.path.realpath(__file__)) + "\\mdbtools"
+            path = os.getcwd() + "\\mdbtools"
+            print(path)
+            print(path1)
             output_tables = subprocess.check_output(
                 [path + '\\mdb-tables.exe', path1]).decode()
             output_tables = output_tables.split()
@@ -876,7 +892,7 @@ if __name__ == '__main__':
             multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
             try:
                 writer.close()
-            except IOError:
+            except Exception:
                 pass
             organiza_relat(file_path, 0)
             str_temp = "start EXCEL.EXE " + file_path
@@ -926,7 +942,7 @@ if __name__ == '__main__':
             multiple_dfs(dfs, 'RELATÓRIO', file_path, 3)
             try:
                 writer.close()
-            except IOError:
+            except Exception:
                 pass
             organiza_relat(file_path, 1)
             str_temp = "start EXCEL.EXE " + file_path
