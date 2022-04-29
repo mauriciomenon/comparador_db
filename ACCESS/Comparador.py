@@ -8,7 +8,7 @@
 # TODO:*
 # Filtragem de texto (pesquisa)
 # Tirar a opção de colorir de um menu
-
+#
 
 import subprocess
 import pandas as pd
