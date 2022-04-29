@@ -8,7 +8,7 @@
 # TODO:*
 # Filtragem de texto (pesquisa)
 # Tirar a opção de colorir de um menu
-#
+
 
 import subprocess
 import pandas as pd
@@ -557,8 +557,6 @@ if __name__ == '__main__':
             # Cria a linha de comando no cmd que executa o arquivo mdb-tables
             # e guarda o output na lista
             path = os.getcwd() + "\\mdbtools"
-            print(path)
-            print(path1)
             output_tables = subprocess.check_output(
                 [path + '\\mdb-tables.exe', path1]).decode()
             output_tables = output_tables.split()
