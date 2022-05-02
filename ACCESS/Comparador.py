@@ -8,6 +8,9 @@
 # TODO:*
 # Filtragem de texto (pesquisa)
 # Tirar a opção de colorir de um menu
+# Verificar o tamanho do arquivo para mudar o tipo de importação
+# Verificar se os arquivos nao sao os mesmos
+# tirar o filtro
 
 
 import subprocess
@@ -15,12 +18,14 @@ import pandas as pd
 import os
 import tkinter as tk
 import openpyxl
-from tkinter import ttk, messagebox, filedialog as fd
+from tkinter import ttk, messagebox, Frame, Label, Entry, Toplevel, filedialog as fd
+
 from pandastable import Table
 from pandastable import config
 from openpyxl.styles import PatternFill, Font
 from openpyxl.styles.borders import Border, Side
 import multiprocessing
+import regex as re
 
 
 global colore
@@ -420,36 +425,27 @@ if __name__ == '__main__':
     # dataframe temporário para exibir linhas em branco ao iniciar o programa
     # Unicamente estético, não altera performance
     df = pd.DataFrame({
-        'A': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'B': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'C': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'D': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'E': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'F': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'G': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'H': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'I': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'J': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'K': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'L': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'M': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'N': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        'O': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'A': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'B': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'C': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'D': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'E': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'F': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'G': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'H': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'I': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'J': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'K': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'L': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'M': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'N': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'O': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'P': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'Q': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'R': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'S': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'T': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        'U': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
     })
 
     # CRIA A JANELA PRINCIPAL
@@ -460,10 +456,75 @@ if __name__ == '__main__':
     height = root.winfo_screenheight()
     # Faz com que a janela principal tenha o tamanho igual a resolução
     root.geometry("%dx%d" % (width, height))
-    root.title("COMPARADOR ACCESS v0.2.1")
+    root.title("COMPARADOR ACCESS v0.3")
     # Maximiza a janela principal
     root.state("zoomed")
 
+
+    # PARTE DA PESQUISA
+
+    def filtra():
+        global campo_pesquisa
+        global table1,table2,table_discrep,table_excluidas_table_novas
+        global table1_filtrada
+        table1_filtrada = table1.astype(str)
+        table1_filtrada = table1_filtrada[table1_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
+        print(table1_filtrada)
+
+    def find():
+
+        #ser = modify.get()
+        #messagebox.showinfo("ERRO", ser)
+        colunas_pesquisar = colunas
+        colunas_pesquisar.append("TODOS")
+        child_w= Toplevel(root)
+        child_w.geometry("450x110")
+        child_w.grab_set()
+        child_w.title("FILTRAGEM")
+        Frm = Frame(child_w)
+        Label(Frm,text='Enter Word to Find:')
+        #Label.place(x=0, y=50, height=250, width=750)
+        Frm.place(x=0, y=0, height=110, width=450)
+        modu = Entry(Frm)
+        modu.place(x=10, y=30, height=30, width=200)
+        modu.focus_set()
+        #txt = Text(root)
+        #txt.place(x=0, y=0, height=25, width=100)
+
+        #txt.insert('1.0','''Enter here...''')
+        #txt.pack(side=BOTTOM)
+        buttn = ttk.Button(Frm, text='FILTRAR')
+        buttn.place(x=450/2-40, y=70, height=35, width=80)
+        #Create Label in Mainwindow and Childwindow
+        label_child= Label(child_w, text= "Pesquisar por:")
+        label_child.place(x=10+200/2-40, y=0, height=20, width=80)
+        
+        
+        label_child2= Label(child_w, text= "Nos campos:")
+        label_child2.place(x=450/2+80, y=0, height=20, width=80)
+        
+        
+        selected = tk.StringVar()
+        c2_cb = ttk.Combobox(child_w, width=50, textvariable=selected)
+        c2_cb['values'] = colunas
+        c2_cb['state'] = 'readonly'
+        c2_cb.pack(fill=tk.X, padx=5, pady=5)
+        c2_cb.place(x=450/2+15, y=30, height=30, width=200)
+        c2_cb.current(0)
+        
+        
+        def xx():
+            global texto_pesquisa
+            global campo_pesquisa
+            texto_pesquisa = modu.get()
+            campo_pesquisa = selected.get()
+            print(texto_pesquisa)
+            child_w.destroy() 
+            filtra()
+            
+        buttn.config(command=xx)
+    
+    
     def select_campos():
         global campos
 
@@ -972,6 +1033,8 @@ if __name__ == '__main__':
     colore.set(False)
     optionsmenu.add_checkbutton(label='Colorir Ocorrencias',
                                 onvalue=1, offvalue=0, variable=colore)
+    optionsmenu.add_command(label="Filtrar",
+                           command=find)
 
     menubar.add_cascade(label="Arquivo", menu=filemenu)
     menubar.add_cascade(label="Exportar", menu=exportmenu)
