@@ -10,6 +10,8 @@
 # Verificar o tamanho do arquivo para mudar o tipo de importação
 # Verificar se os arquivos nao sao os mesmos
 # FEITO tirar o filtro
+# Retirar o ponto nos inteiros
+# Criar um executavel sem a pasta
 
 
 import subprocess
@@ -187,6 +189,9 @@ def update_table(filtrado):
 def process_importa_antigo(path, file1, selected_table):
     # Cria uma linha de comando e executa no cmd para importar o arquivo antigo
     # Funciona somente se mdb-export.exe existe na pasta mdbtools
+    print(file1)
+
+    print(file1)
     export_command = path + '\\mdb-export.exe ' + file1
     export_command += ' '
     export_command += selected_table + '  > temp1.csv'
@@ -199,6 +204,9 @@ def process_importa_antigo(path, file1, selected_table):
 def process_importa_novo(path, file2, selected_table):
     # Cria uma linha de comando e executa no cmd para importar o arquivo novo
     # Funciona somente se mdb-export.exe existe na pasta mdbtools
+    print(file2)
+
+    print(file2)
     export_command = path + '\\mdb-export.exe ' + file2
     export_command += ' '
     export_command += selected_table + '  > temp2.csv'
@@ -224,6 +232,15 @@ def load_tables():
     if file1.endswith('.accdb'):
         # Seleciona a pasta mdbtools que deve estar na mesma pasta do programa
         path = os.getcwd() + "\\mdbtools"
+        print(selected_table)
+        if " " in file1:
+            file_temp = file1.replace(" ", "_")
+            os.rename(file1, file_temp)
+            file1 = file_temp
+        if " " in file2:
+            file_temp = file2.replace(" ", "_")
+            os.rename(file2, file_temp)
+            file2 = file_temp
 
         if __name__ == '__main__':
             # Cria dois processos para importar os arquivos
@@ -245,7 +262,7 @@ def load_tables():
             os.remove("temp1.csv")
         except Exception:
             messagebox.showinfo(
-                "ERRO", "nao encontrou aquivo csv")
+                "ERRO", "nao encontrou aquivo csv1")
 
         # Exclui linhas vazias
         df2 = table1[table1.isna().all(axis=1)]
@@ -555,7 +572,7 @@ if __name__ == '__main__':
         c2_cb['state'] = 'readonly'
         c2_cb.pack(fill=tk.X, padx=5, pady=5)
         c2_cb.place(x=450/2+15, y=30, height=30, width=200)
-        c2_cb.current(0)
+        # c2_cb.current(0)
 
         def xx():
             global texto_pesquisa
@@ -1073,7 +1090,7 @@ if __name__ == '__main__':
     optionsmenu = tk.Menu(menubar, tearoff=0)
     colore = tk.BooleanVar()
     colore.set(False)
-    optionsmenu.add_checkbutton(label='Colorir Ocorrencias',
+    optionsmenu.add_checkbutton(label='Colorir Ocorrencias (BETA)',
                                 onvalue=1, offvalue=0, variable=colore)
     optionsmenu.add_command(label="Filtrar", command=find)
 
