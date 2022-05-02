@@ -28,7 +28,7 @@ from openpyxl.styles import PatternFill, Font
 from openpyxl.styles.borders import Border, Side
 import multiprocessing
 import regex as re
-
+import sys
 
 global colore
 
@@ -42,6 +42,12 @@ selected_table = ""
 campos = ['Nenhum', 'Nenhum', 'Nenhum']
 colunas = []
 table1 = pd.DataFrame()
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 
 
 def pinta_discrep():
@@ -243,6 +249,7 @@ def load_tables():
             file2 = file_temp
 
         if __name__ == '__main__':
+
             # Cria dois processos para importar os arquivos
             p1 = multiprocessing.Process(
                 target=process_importa_antigo,
@@ -1200,6 +1207,8 @@ if __name__ == '__main__':
 
     # Comando quando a janela é fechada
     root.protocol("WM_DELETE_WINDOW", close_root)
-
+    
+    image_path = resource_path("icone.ico")
+    root.iconbitmap(image_path)
     # Loop janela principal
     root.mainloop()
