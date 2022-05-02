@@ -112,21 +112,31 @@ def clear_table():
                             " arquivo antigo): ")
 
 
-def update_table():
+def update_table(filtrado):
     # Função responsavel por atualizar as tabelas na interface após comparação
 
     # Atualiza a tabela 1
-    pt1.model.df = table1
+    if filtrado:
+        pt1.model.df = table1_filtrada
+    else:
+        pt1.model.df = table1
     pt1.autoResizeColumns()
     pt1.redraw()
 
     # Atualiza a tabela 2
-    pt2.model.df = table2
+    if filtrado:
+        pt2.model.df = table2_filtrada
+    else:
+        pt2.model.df = table2
     pt2.autoResizeColumns()
     pt2.redraw()
 
     # Atualiza a tabela de discrepancias
-    pt_resul_discrep.model.df = table_discrep
+    if filtrado:
+        pt_resul_discrep.model.df = table_discrep_filtrada
+    else:
+        pt_resul_discrep.model.df = table_discrep
+
     lbl_discrep.configure(text="LINHAS DISCREPANTES: "
                           + str(table_discrep1.shape[0]))
 
@@ -151,8 +161,11 @@ def update_table():
 
     # Atualiza a tabela das linhas novas
     lbl_novas.configure(text="LINHAS ADICIONADAS (presentes somente no "
-                        "arquivo novo): " + str(table_novas.shape[0]))
-    pt_resul_novas.model.df = table_novas
+                        "arquivo novo): " + str(table_novas.shape[0])),
+    if filtrado:
+        pt_resul_novas.model.df = table_novas_filtrada
+    else:
+        pt_resul_novas.model.df = table_novas
     pt_resul_novas.autoResizeColumns()
     pt_resul_novas.showIndex()
     pt_resul_novas.redraw()
@@ -161,7 +174,11 @@ def update_table():
     lbl_excluidas.configure(text="LINHAS EXCLUIDAS (presentes somente no"
                             " arquivo antigo): "
                             + str(table_excluidas.shape[0]))
-    pt_resul_excluidas.model.df = table_excluidas
+    if filtrado:
+        pt_resul_excluidas.model.df = table_excluidas_filtrada
+    else:
+        pt_resul_excluidas.model.df = table_excluidas
+        
     pt_resul_excluidas.autoResizeColumns()
     pt_resul_excluidas.showIndex()
     pt_resul_excluidas.redraw()
@@ -381,7 +398,7 @@ def compara():
     table_excluidas.index = temp_index
 
     # Função que atualiza as tabelas na interface
-    update_table()
+    update_table(0)
 
 
 ###########################################################
@@ -465,18 +482,33 @@ if __name__ == '__main__':
 
     def filtra():
         global campo_pesquisa
-        global table1,table2,table_discrep,table_excluidas_table_novas
+        global table1,table2,table_discrep,table_excluidas,table_novas
         global table1_filtrada
+        global table2_filtrada
+        global table_discrep_filtrada
+        global table_excluidas_filtrada
+        global table_novas_filtrada
+        
         table1_filtrada = table1.astype(str)
+        table2_filtrada = table2.astype(str)
+        table_discrep_filtrada = table_discrep.astype(str)
+        table_excluidas_filtrada = table_excluidas.astype(str)
+        table_novas_filtrada = table_novas.astype(str)
+        
         table1_filtrada = table1_filtrada[table1_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
-        print(table1_filtrada)
+        table2_filtrada = table2_filtrada[table2_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
+        table_discrep_filtrada = table_discrep_filtrada[table_discrep_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
+        table_excluidas_filtrada = table_excluidas_filtrada[table_excluidas_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
+        table_novas_filtrada = table_novas_filtrada[table_novas_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
+        update_table(1)
 
     def find():
 
         #ser = modify.get()
         #messagebox.showinfo("ERRO", ser)
         colunas_pesquisar = colunas
-        colunas_pesquisar.append("TODOS")
+        colunas_pesquisar.pop(0)
+        colunas_pesquisar.insert(0,"TODOS")
         child_w= Toplevel(root)
         child_w.geometry("450x110")
         child_w.grab_set()
@@ -506,7 +538,7 @@ if __name__ == '__main__':
         
         selected = tk.StringVar()
         c2_cb = ttk.Combobox(child_w, width=50, textvariable=selected)
-        c2_cb['values'] = colunas
+        c2_cb['values'] = colunas_pesquisar
         c2_cb['state'] = 'readonly'
         c2_cb.pack(fill=tk.X, padx=5, pady=5)
         c2_cb.place(x=450/2+15, y=30, height=30, width=200)
