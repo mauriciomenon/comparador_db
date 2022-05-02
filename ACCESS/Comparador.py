@@ -18,7 +18,8 @@ import pandas as pd
 import os
 import tkinter as tk
 import openpyxl
-from tkinter import ttk, messagebox, Frame, Label, Entry, Toplevel, filedialog as fd
+from tkinter import ttk, messagebox, Frame, Label, Entry, Toplevel
+from tkinter import filedialog as fd
 
 from pandastable import Table
 from pandastable import config
@@ -178,7 +179,7 @@ def update_table(filtrado):
         pt_resul_excluidas.model.df = table_excluidas_filtrada
     else:
         pt_resul_excluidas.model.df = table_excluidas
-        
+
     pt_resul_excluidas.autoResizeColumns()
     pt_resul_excluidas.showIndex()
     pt_resul_excluidas.redraw()
@@ -477,65 +478,64 @@ if __name__ == '__main__':
     # Maximiza a janela principal
     root.state("zoomed")
 
-
     # PARTE DA PESQUISA
 
     def filtra():
         global campo_pesquisa
-        global table1,table2,table_discrep,table_excluidas,table_novas
         global table1_filtrada
         global table2_filtrada
         global table_discrep_filtrada
         global table_excluidas_filtrada
         global table_novas_filtrada
-        
+
         table1_filtrada = table1.astype(str)
         table2_filtrada = table2.astype(str)
         table_discrep_filtrada = table_discrep.astype(str)
         table_excluidas_filtrada = table_excluidas.astype(str)
         table_novas_filtrada = table_novas.astype(str)
-        
-        table1_filtrada = table1_filtrada[table1_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
-        table2_filtrada = table2_filtrada[table2_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
-        table_discrep_filtrada = table_discrep_filtrada[table_discrep_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
-        table_excluidas_filtrada = table_excluidas_filtrada[table_excluidas_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
-        table_novas_filtrada = table_novas_filtrada[table_novas_filtrada[campo_pesquisa].str.contains(texto_pesquisa,flags=re.IGNORECASE)]
+
+        table1_filtrada = table1_filtrada[
+            table1_filtrada[campo_pesquisa].str.contains(
+                texto_pesquisa, flags=re.IGNORECASE)]
+        table2_filtrada = table2_filtrada[table2_filtrada[
+            campo_pesquisa].str.contains(texto_pesquisa, flags=re.IGNORECASE)]
+        table_discrep_filtrada = table_discrep_filtrada[
+            table_discrep_filtrada[campo_pesquisa].str.contains(
+                texto_pesquisa, flags=re.IGNORECASE)]
+        table_excluidas_filtrada = table_excluidas_filtrada[
+            table_excluidas_filtrada[campo_pesquisa].str.contains(
+                texto_pesquisa, flags=re.IGNORECASE)]
+        table_novas_filtrada = table_novas_filtrada[
+            table_novas_filtrada[campo_pesquisa].str.contains(
+                texto_pesquisa, flags=re.IGNORECASE)]
         update_table(1)
 
     def find():
 
-        #ser = modify.get()
-        #messagebox.showinfo("ERRO", ser)
         colunas_pesquisar = colunas
         colunas_pesquisar.pop(0)
-        colunas_pesquisar.insert(0,"TODOS")
-        child_w= Toplevel(root)
+        colunas_pesquisar.insert(0, "TODOS")
+        child_w = Toplevel(root)
         child_w.geometry("450x110")
         child_w.grab_set()
         child_w.title("FILTRAGEM")
         Frm = Frame(child_w)
-        Label(Frm,text='Enter Word to Find:')
-        #Label.place(x=0, y=50, height=250, width=750)
+        Label(Frm, text='Enter Word to Find:')
+        # Label.place(x=0, y=50, height=250, width=750)
         Frm.place(x=0, y=0, height=110, width=450)
         modu = Entry(Frm)
         modu.place(x=10, y=30, height=30, width=200)
         modu.focus_set()
-        #txt = Text(root)
-        #txt.place(x=0, y=0, height=25, width=100)
 
-        #txt.insert('1.0','''Enter here...''')
-        #txt.pack(side=BOTTOM)
         buttn = ttk.Button(Frm, text='FILTRAR')
         buttn.place(x=450/2-40, y=70, height=35, width=80)
-        #Create Label in Mainwindow and Childwindow
-        label_child= Label(child_w, text= "Pesquisar por:")
+        # Create Label in Mainwindow and Childwindow
+        label_child = Label(child_w, text="Pesquisar por:")
         label_child.place(x=10+200/2-40, y=0, height=20, width=80)
-        
-        
-        label_child2= Label(child_w, text= "Nos campos:")
+
+        label_child2 = Label(child_w, text="Nos campos:")
         label_child2.place(x=450/2+80, y=0, height=20, width=80)
-        
-        
+
         selected = tk.StringVar()
         c2_cb = ttk.Combobox(child_w, width=50, textvariable=selected)
         c2_cb['values'] = colunas_pesquisar
@@ -543,20 +543,18 @@ if __name__ == '__main__':
         c2_cb.pack(fill=tk.X, padx=5, pady=5)
         c2_cb.place(x=450/2+15, y=30, height=30, width=200)
         c2_cb.current(0)
-        
-        
+
         def xx():
             global texto_pesquisa
             global campo_pesquisa
             texto_pesquisa = modu.get()
             campo_pesquisa = selected.get()
             print(texto_pesquisa)
-            child_w.destroy() 
+            child_w.destroy()
             filtra()
-            
+
         buttn.config(command=xx)
-    
-    
+
     def select_campos():
         global campos
 
@@ -1065,8 +1063,7 @@ if __name__ == '__main__':
     colore.set(False)
     optionsmenu.add_checkbutton(label='Colorir Ocorrencias',
                                 onvalue=1, offvalue=0, variable=colore)
-    optionsmenu.add_command(label="Filtrar",
-                           command=find)
+    optionsmenu.add_command(label="Filtrar", command=find)
 
     menubar.add_cascade(label="Arquivo", menu=filemenu)
     menubar.add_cascade(label="Exportar", menu=exportmenu)
