@@ -1,4 +1,3 @@
-
 # PROGRAMA EM PYTHON PARA FAZER COMPARAÇÃO DE TABELAS EM ARQUIVOS ACCESS .accdb
 # Autor: Rafael Henrique da Rosa
 # Estagiário Divisão de Engenharia de Manutenção
@@ -6,11 +5,11 @@
 # Abril de 2022
 
 # TODO:*
-# Filtragem de texto (pesquisa)
+# FEITO Filtragem de texto (pesquisa)
 # Tirar a opção de colorir de um menu
 # Verificar o tamanho do arquivo para mudar o tipo de importação
 # Verificar se os arquivos nao sao os mesmos
-# tirar o filtro
+# FEITO tirar o filtro
 
 
 import subprocess
@@ -478,6 +477,17 @@ if __name__ == '__main__':
     # Maximiza a janela principal
     root.state("zoomed")
 
+    def unfilter():
+        btn.place_forget()
+        label3.place_forget()
+        update_table(0)
+
+    btn = ttk.Button(root, text="X", command=unfilter)
+    btn.place(x=width-200-22, y=50, height=20, width=20)
+    label3 = ttk.Label(text="Filtro: RTUNO")
+    label3.place(x=width-200, y=50, height=20, width=200)
+    btn.place_forget()
+    label3.place_forget()
     # PARTE DA PESQUISA
 
     def filtra():
@@ -509,12 +519,15 @@ if __name__ == '__main__':
             table_novas_filtrada[campo_pesquisa].str.contains(
                 texto_pesquisa, flags=re.IGNORECASE)]
         update_table(1)
+        label3.config(text="FILTRO: " + texto_pesquisa)
+        btn.place(x=width-200-22, y=50, height=20, width=20)
+        label3.place(x=width-200, y=50, height=20, width=200)
 
     def find():
 
         colunas_pesquisar = colunas
         colunas_pesquisar.pop(0)
-        colunas_pesquisar.insert(0, "TODOS")
+        # colunas_pesquisar.insert(0, "TODOS")
         child_w = Toplevel(root)
         child_w.geometry("450x110")
         child_w.grab_set()
@@ -549,7 +562,6 @@ if __name__ == '__main__':
             global campo_pesquisa
             texto_pesquisa = modu.get()
             campo_pesquisa = selected.get()
-            print(texto_pesquisa)
             child_w.destroy()
             filtra()
 
