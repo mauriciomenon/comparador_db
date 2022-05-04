@@ -43,14 +43,19 @@ campos = ['Nenhum', 'Nenhum', 'Nenhum']
 colunas = []
 table1 = pd.DataFrame()
 
+
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
     return os.path.join(base_path, relative_path)
 
-
-
 def pinta_discrep():
+
     # Função responsavel por mudar a cor das celulas
     # que possuem os mesmos valores de comparação
     # e outros valores diferentes
@@ -195,10 +200,8 @@ def update_table(filtrado):
 def process_importa_antigo(path, file1, selected_table):
     # Cria uma linha de comando e executa no cmd para importar o arquivo antigo
     # Funciona somente se mdb-export.exe existe na pasta mdbtools
-    print(file1)
-
-    print(file1)
-    export_command = path + '\\mdb-export.exe ' + file1
+    export_command = path 
+    export_command += ' ' + file1
     export_command += ' '
     export_command += selected_table + '  > temp1.csv'
     # executa a linha de comando no cmd
@@ -210,10 +213,8 @@ def process_importa_antigo(path, file1, selected_table):
 def process_importa_novo(path, file2, selected_table):
     # Cria uma linha de comando e executa no cmd para importar o arquivo novo
     # Funciona somente se mdb-export.exe existe na pasta mdbtools
-    print(file2)
-
-    print(file2)
-    export_command = path + '\\mdb-export.exe ' + file2
+    export_command = path 
+    export_command += ' ' + file2
     export_command += ' '
     export_command += selected_table + '  > temp2.csv'
     # subprocess.run(['cmd.exe', '/c', export_command])
@@ -237,8 +238,7 @@ def load_tables():
     # Caso a comparação seja em arquivos access:
     if file1.endswith('.accdb'):
         # Seleciona a pasta mdbtools que deve estar na mesma pasta do programa
-        path = os.getcwd() + "\\mdbtools"
-        print(selected_table)
+        path = resource_path('mdbtools\\mdb-export.exe')
         if " " in file1:
             file_temp = file1.replace(" ", "_")
             os.rename(file1, file_temp)
@@ -683,9 +683,9 @@ if __name__ == '__main__':
         if file_type == 'access':
             # Cria a linha de comando no cmd que executa o arquivo mdb-tables
             # e guarda o output na lista
-            path = os.getcwd() + "\\mdbtools"
+            path = resource_path('mdbtools\\mdb-tables.exe')
             output_tables = subprocess.check_output(
-                [path + '\\mdb-tables.exe', path1]).decode()
+                [path, path1]).decode()
             output_tables = output_tables.split()
 
         # Caso seja arquivo excel:
