@@ -13,7 +13,7 @@
 # FEITO Criar um executavel sem a pasta
 # FEITO Verificar se a tabela existe nos dois bancos
 # FEITO Verificar se o arquivo novo e antigo não é o mesmo
-# Arrumar a exportação do relatório
+# FEITO Arrumar a exportação do relatório
 
 import subprocess
 import pandas as pd
