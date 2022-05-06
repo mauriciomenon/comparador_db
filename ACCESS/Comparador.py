@@ -6,13 +6,12 @@
 
 # TODO:*
 # FEITO Filtragem de texto (pesquisa)
-# Tirar a opção de colorir de um menu
-# Verificar o tamanho do arquivo para mudar o tipo de importação
-# Verificar se os arquivos nao sao os mesmos
+# FEITO Verificar o tamanho do arquivo para mudar o tipo de importação
 # FEITO tirar o filtro
-# Retirar o ponto nos inteiros
-# Criar um executavel sem a pasta
-
+# FEITO Retirar o ponto nos inteiros
+# FEITO Criar um executavel sem a pasta
+# FEITO Verificar se a tabela existe nos dois bancos
+# FEITO Verificar se o arquivo novo e antigo não é o mesmo
 
 import subprocess
 import pandas as pd
@@ -45,7 +44,6 @@ table1 = pd.DataFrame()
 
 
 def resource_path(relative_path):
-    """ Get the absolute path to the resource, works for dev and for PyInstaller """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
@@ -53,6 +51,7 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
+
 
 def pinta_discrep():
 
@@ -200,7 +199,7 @@ def update_table(filtrado):
 def process_importa_antigo(path, file1, selected_table):
     # Cria uma linha de comando e executa no cmd para importar o arquivo antigo
     # Funciona somente se mdb-export.exe existe na pasta mdbtools
-    export_command = path 
+    export_command = path
     export_command += ' ' + file1
     export_command += ' '
     export_command += selected_table + '  > temp1.csv'
@@ -213,7 +212,7 @@ def process_importa_antigo(path, file1, selected_table):
 def process_importa_novo(path, file2, selected_table):
     # Cria uma linha de comando e executa no cmd para importar o arquivo novo
     # Funciona somente se mdb-export.exe existe na pasta mdbtools
-    export_command = path 
+    export_command = path
     export_command += ' ' + file2
     export_command += ' '
     export_command += selected_table + '  > temp2.csv'
@@ -250,18 +249,33 @@ def load_tables():
 
         if __name__ == '__main__':
 
-            # Cria dois processos para importar os arquivos
-            p1 = multiprocessing.Process(
-                target=process_importa_antigo,
-                args=(path, file1, selected_table))
-            p1.start()
-            p2 = multiprocessing.Process(
-                target=process_importa_novo,
-                args=(path, file2, selected_table))
-            p2.start()
-            # Espera a importação para continuar na main
-            p1.join()
-            p2.join()
+            if (os.path.getsize(file1)/1024/1000) > 10 and (
+                    os.path.getsize(file2)/1024/1000) > 10:
+                # Cria dois processos para importar os arquivos
+                p1 = multiprocessing.Process(
+                    target=process_importa_antigo,
+                    args=(path, file1, selected_table))
+                p1.start()
+                p2 = multiprocessing.Process(
+                    target=process_importa_novo,
+                    args=(path, file2, selected_table))
+                p2.start()
+                # Espera a importação para continuar na main
+                p1.join()
+                p2.join()
+            else:
+                export_command = path
+                export_command += ' ' + file1
+                export_command += ' '
+                export_command += selected_table + '  > temp1.csv'
+                # executa a linha de comando no cmd
+                subprocess.run(['cmd.exe', '/c', export_command])
+
+                export_command = path
+                export_command += ' ' + file2
+                export_command += ' '
+                export_command += selected_table + '  > temp2.csv'
+                subprocess.run(['cmd.exe', '/c', export_command])
         # importa o arquivo csv em um dataframe do pandas e exclui o arquivo
         # o encoding é necessário pois na tabela existe um caracter "°"
         try:
@@ -293,6 +307,10 @@ def load_tables():
         table1 = pd.read_excel(open(file1, 'rb'), sheet_name=selected_table)
         table2 = pd.read_excel(open(file2, 'rb'), sheet_name=selected_table)
 
+    # ajusta o tipo de variáveis dos dataframes
+    table1 = table1.convert_dtypes()
+    table2 = table2.convert_dtypes()
+
 
 def compara():
     # FUNÇÃO RESPONSAVEL PELA COMPARAÇÃO DAS DUAS TABELAS
@@ -306,9 +324,9 @@ def compara():
     global campos
     # Copia os nomes das colunas das tabelas carregadas
     # para os 3 dataframes do relatório
-    table_novas = table2[0:0]
-    table_excluidas = table2[0:0]
-    table_discrep = table2[0:0]
+    # table_novas = table1[0:0]
+    # table_excluidas = table1[0:0]
+    # table_discrep = table1[0:0]
 
     # Preenche o dataframe table_excluidas com as
     # linhas que possuem valores de 'RTUNO' e 'PNTNO'
@@ -688,15 +706,22 @@ if __name__ == '__main__':
                 [path, path1]).decode()
             output_tables = output_tables.split()
 
+            path = resource_path('mdbtools\\mdb-tables.exe')
+            output_tables2 = subprocess.check_output(
+                [path, path2]).decode()
+            output_tables2 = output_tables2.split()
+
         # Caso seja arquivo excel:
         elif file_type == 'excel':
             try:
                 table_obj = openpyxl.load_workbook(path1)
+                table_obj2 = openpyxl.load_workbook(path2)
 
             except openpyxl.utils.exceptions.InvalidFileException:
                 print("ai realmente não ta abrindo o arquivo antigo")
             # Guarda o nome dos sheets na lista
             output_tables = table_obj.sheetnames
+            output_tables2 = table_obj2.sheetnames
 
         # Cria uma label para indicar que a tabela deve ser selecionada
         label = ttk.Label(text="Selecione a tabela para comparar:")
@@ -714,9 +739,12 @@ if __name__ == '__main__':
         def month_changed(event):
             global selected_table
             selected_table = selected_month.get()
-            load_tables()
-            select_campos()
-
+            if selected_table in output_tables2:
+                load_tables()
+                select_campos()
+            else:
+                messagebox.showinfo(
+                    "ERRO", "TABELA NÃO EXISTE NO ARQUIVO NOVO")
         month_cb.bind('<<ComboboxSelected>>', month_changed)
 
     def select_file_access2():
@@ -734,6 +762,8 @@ if __name__ == '__main__':
                 messagebox.showinfo
                 ("ERRO", "SELECIONE UM ARQUIVO ACCESS (.accdb)")
                 break
+            if path1 == path2:
+                messagebox.showinfo("ERRO", "ARQUIVOS SELECIONADOS IGUAIS")
             else:
                 break
 
@@ -777,6 +807,8 @@ if __name__ == '__main__':
                 messagebox.showinfo(
                     "ERRO", "SELECIONE UM ARQUIVO EXCEL (.xlsx)")
                 break
+            if path1 == path2:
+                messagebox.showinfo("ERRO", "ARQUIVOS SELECIONADOS IGUAIS")
             else:
                 break
 
@@ -1207,7 +1239,7 @@ if __name__ == '__main__':
 
     # Comando quando a janela é fechada
     root.protocol("WM_DELETE_WINDOW", close_root)
-    
+
     image_path = resource_path("icone.ico")
     root.iconbitmap(image_path)
     # Loop janela principal
