@@ -8,7 +8,8 @@
 # FEITO Filtragem de texto (pesquisa)
 # FEITO Verificar o tamanho do arquivo para mudar o tipo de importação
 # FEITO tirar o filtro
-# FEITO Retirar o ponto nos inteiros
+# FEITO Retirar o ponto nos inteiros (existe uma função comentada no codigo
+#       mas é pessima para tabelas grandes)
 # FEITO Criar um executavel sem a pasta
 # FEITO Verificar se a tabela existe nos dois bancos
 # FEITO Verificar se o arquivo novo e antigo não é o mesmo
