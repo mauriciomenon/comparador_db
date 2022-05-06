@@ -512,8 +512,8 @@ if __name__ == '__main__':
 
     def close_root():
         # Função para confimar o fechamento da interface
-        # if messagebox.askokcancel("SAIR", "Deseja Sair?"):
-        root.destroy()
+        if messagebox.askyesno("SAIR", "Fechar o aplicativo?"):
+            root.destroy()
 
     # dataframe temporário para exibir linhas em branco ao iniciar o programa
     # Unicamente estético, não altera performance
