@@ -13,6 +13,7 @@
 # FEITO Criar um executavel sem a pasta
 # FEITO Verificar se a tabela existe nos dois bancos
 # FEITO Verificar se o arquivo novo e antigo não é o mesmo
+# Arrumar a exportação do relatório
 
 import subprocess
 import pandas as pd
@@ -965,43 +966,43 @@ if __name__ == '__main__':
                 i, 1).value = table_sheet_resul_obj.cell(i, 1).value + 1
 
         # se for uma exportação completa com os 3 sheets
-        if is_complet:
-            # Pinta as linhas discrepantes de vermelho
-            for i in range(2, table_discrep.shape[1]+2):
-                for j in range(5, table_discrep.shape[0]+5):
-                    table_sheet_resul_obj.cell(j, i).border = borda_fina
 
-                    if j % 2 == 1:
-                        if i != 2:
-                            if table_sheet_resul_obj.cell(
-                                    j, i).value != table_sheet_resul_obj.cell(
-                                        j+1, i).value:
-                                table_sheet_resul_obj.cell(
-                                    j, i).fill = vermelho
-                                table_sheet_resul_obj.cell(
-                                    j+1, i).fill = vermelho
-                                if is_complet:
-                                    for k in range(1, table_discrep.shape[1]):
-                                        table_sheet_antigo_obj.cell(
-                                            table_sheet_resul_obj.cell(
-                                                j, 1).value, k).fill = vermelho
-                                        table_sheet_novo_obj.cell(
-                                            table_sheet_resul_obj.cell(
-                                                j+1, 1).value,
-                                            k).fill = vermelho
+        # Pinta as linhas discrepantes de vermelho
+        for i in range(2, table_discrep.shape[1]+2):
+            for j in range(5, table_discrep.shape[0]+5):
+                table_sheet_resul_obj.cell(j, i).border = borda_fina
 
-            # Pinta as linhas novas de vermelho claro
-            for i in range(2, table_novas.shape[1]+2):
-                for j in range(table_discrep.shape[0]+5+4,
-                               table_discrep.shape[0] + 5
-                               + 4 + table_novas.shape[0]):
-                    table_sheet_resul_obj.cell(j, i).border = borda_fina
-                    table_sheet_resul_obj.cell(j, i).fill = vermelho_claro
-                    if is_complet:
-                        for k in range(1, table_novas.shape[1]):
-                            table_sheet_novo_obj.cell(
-                                table_sheet_resul_obj.cell(
-                                    j, 1).value, k).fill = vermelho_claro
+                if j % 2 == 1:
+                    if i != 2:
+                        if table_sheet_resul_obj.cell(
+                                j, i).value != table_sheet_resul_obj.cell(
+                                    j+1, i).value:
+                            table_sheet_resul_obj.cell(
+                                j, i).fill = vermelho
+                            table_sheet_resul_obj.cell(
+                                j+1, i).fill = vermelho
+                            if is_complet:
+                                for k in range(1, table_discrep.shape[1]):
+                                    table_sheet_antigo_obj.cell(
+                                        table_sheet_resul_obj.cell(
+                                            j, 1).value, k).fill = vermelho
+                                    table_sheet_novo_obj.cell(
+                                        table_sheet_resul_obj.cell(
+                                            j+1, 1).value,
+                                        k).fill = vermelho
+
+        # Pinta as linhas novas de vermelho claro
+        for i in range(2, table_novas.shape[1]+2):
+            for j in range(table_discrep.shape[0]+5+4,
+                           table_discrep.shape[0] + 5
+                           + 4 + table_novas.shape[0]):
+                table_sheet_resul_obj.cell(j, i).border = borda_fina
+                table_sheet_resul_obj.cell(j, i).fill = vermelho_claro
+                if is_complet:
+                    for k in range(1, table_novas.shape[1]):
+                        table_sheet_novo_obj.cell(
+                            table_sheet_resul_obj.cell(
+                                j, 1).value, k).fill = vermelho_claro
 
             # Pinta as linhas excluidas de verde
             for i in range(2, table_excluidas.shape[1]+2):
