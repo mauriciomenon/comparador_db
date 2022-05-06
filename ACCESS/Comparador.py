@@ -233,46 +233,69 @@ def load_tables():
 
     file1 = path1
     file2 = path2
+    file_temp1 = path1
+    file_temp2 = path2
 
     # Caso a comparação seja em arquivos access:
     if file1.endswith('.accdb'):
+
+        # Corrige o nome do arquivo para funcionar o mdb-tools
+        # O nome do arquivo não pode ter espaço
+        if " " in file1:
+            file_temp1 = file1.replace(" ", "_")
+            os.rename(file1, file_temp1)
+        if " " in file2:
+
+            file_temp2 = file2.replace(" ", "_")
+            os.rename(file2, file_temp2)
+
+        # Pega o numero de linhas em cada tabela
+        path = resource_path('mdbtools\\mdb-count.exe')
+        export_command = path
+        export_command += ' ' + file_temp1
+        export_command += ' '
+        export_command += selected_table
+        rows1 = subprocess.check_output(
+                    export_command).decode()
+
+        export_command = path
+        export_command += ' ' + file_temp2
+        export_command += ' '
+        export_command += selected_table
+        rows2 = subprocess.check_output(
+                    export_command).decode()
+
         # Seleciona a pasta mdbtools que deve estar na mesma pasta do programa
         path = resource_path('mdbtools\\mdb-export.exe')
-        if " " in file1:
-            file_temp = file1.replace(" ", "_")
-            os.rename(file1, file_temp)
-            file1 = file_temp
-        if " " in file2:
-            file_temp = file2.replace(" ", "_")
-            os.rename(file2, file_temp)
-            file2 = file_temp
 
         if __name__ == '__main__':
 
-            if (os.path.getsize(file1)/1024/1000) > 10 and (
-                    os.path.getsize(file2)/1024/1000) > 10:
+            # Se as tabelas tiverem mais de 1000 linhas
+            # importa por dois processos
+            if int(rows1) > 1000 or int(rows2) > 1000:
                 # Cria dois processos para importar os arquivos
                 p1 = multiprocessing.Process(
                     target=process_importa_antigo,
-                    args=(path, file1, selected_table))
+                    args=(path, file_temp1, selected_table))
                 p1.start()
                 p2 = multiprocessing.Process(
                     target=process_importa_novo,
-                    args=(path, file2, selected_table))
+                    args=(path, file_temp2, selected_table))
                 p2.start()
                 # Espera a importação para continuar na main
                 p1.join()
                 p2.join()
+            # Caso as tabelas sejam menores importa diretamente
             else:
                 export_command = path
-                export_command += ' ' + file1
+                export_command += ' ' + file_temp1
                 export_command += ' '
                 export_command += selected_table + '  > temp1.csv'
                 # executa a linha de comando no cmd
                 subprocess.run(['cmd.exe', '/c', export_command])
 
                 export_command = path
-                export_command += ' ' + file2
+                export_command += ' ' + file_temp2
                 export_command += ' '
                 export_command += selected_table + '  > temp2.csv'
                 subprocess.run(['cmd.exe', '/c', export_command])
@@ -304,12 +327,21 @@ def load_tables():
     # Caso a comparação seja em arquivos excel
     elif file1.endswith('.xlsx'):
 
-        table1 = pd.read_excel(open(file1, 'rb'), sheet_name=selected_table)
-        table2 = pd.read_excel(open(file2, 'rb'), sheet_name=selected_table)
+        table1 = pd.read_excel(
+            open(file_temp1, 'rb'), sheet_name=selected_table)
+        table2 = pd.read_excel(
+            open(file_temp2, 'rb'), sheet_name=selected_table)
 
     # ajusta o tipo de variáveis dos dataframes
-    table1 = table1.convert_dtypes()
-    table2 = table2.convert_dtypes()
+    # APARENTEMENTE AUMENTA ABSURDAMENTE O TEMPO DE COMPARAÇÃO
+    # table1 = table1.convert_dtypes()
+    # table2 = table2.convert_dtypes()
+
+    # Renomeia os arquivos para o nome original
+    if(file_temp1 != file1):
+        os.rename(file_temp1, file1)
+    if(file_temp2 != file2):
+        os.rename(file_temp2, file2)
 
 
 def compara():
