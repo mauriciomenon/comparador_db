@@ -14,6 +14,7 @@
 # FEITO Verificar se a tabela existe nos dois bancos
 # FEITO Verificar se o arquivo novo e antigo não é o mesmo
 # FEITO Arrumar a exportação do relatório
+# Fazer uma logica de resize e move
 
 import subprocess
 import pandas as pd
@@ -1272,6 +1273,21 @@ if __name__ == '__main__':
     pt_resul_excluidas.redraw()
 
     # Comando quando a janela é fechada
+    window_width, window_height = 0, 0
+
+
+    
+    def resize(event):
+        global width, height
+       # if event.widget.widgetName == "toplevel":
+        if (width != event.width) and (height != event.height):
+            width, height = event.width,event.height
+            print(f"The width of Toplevel is {window_width} and the height of Toplevel "
+                  f"is {window_height}")
+            root.update()
+            
+    root.bind("<Configure>", resize)
+     
     root.protocol("WM_DELETE_WINDOW", close_root)
 
     image_path = resource_path("icone.ico")
