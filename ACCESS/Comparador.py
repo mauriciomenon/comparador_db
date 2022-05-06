@@ -497,8 +497,8 @@ if __name__ == '__main__':
         # Função que mostra as informações do algoritmo
         str_info = "Autor: Rafael Henrique da Rosa\n"
         str_info += "Estagiário Itaipu Binacional- SMIN.DT - Abril de 2022\n"
-        str_info += "O algoritmo compara duas tabelas em arquivos access"
-        str_info += "excluidas,novas e discrepantes"
+        str_info += "O algoritmo compara duas tabelas em arquivos access "
+        str_info += "excluidas, novas e discrepantes"
 
         messagebox.showinfo("Info", str_info)
 
@@ -512,8 +512,8 @@ if __name__ == '__main__':
 
     def close_root():
         # Função para confimar o fechamento da interface
-        if messagebox.askokcancel("SAIR", "Deseja Sair?"):
-            root.destroy()
+        # if messagebox.askokcancel("SAIR", "Deseja Sair?"):
+        root.destroy()
 
     # dataframe temporário para exibir linhas em branco ao iniciar o programa
     # Unicamente estético, não altera performance
