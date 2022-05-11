@@ -1319,7 +1319,7 @@ if __name__ == '__main__':
             frame_resul_excluidas.place(x=0, y=(height/3.9)*2+25+25+30,
                                         height=(height/3.9), width=width)
             lbl_excluidas.place(x=0, y=((height/3.9)*2+25+30),
-                                height=22, width=width-400)
+                                height=22, width=width-30)
             # scroll.place(x=width-20, y=0, height=height, width=16)
             # print(
             # f"The width of Toplevel is {width} and the height of Toplevel "
