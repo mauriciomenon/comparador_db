@@ -489,8 +489,20 @@ def compara():
 ###########################################################
 ###########################################################
 ###########################################################
+print("AAAAAAAAAAAAAAA")
 
-# Execuções na main
+# CRIA A JANELA PRINCIPAL
+root = tk.Tk()
+# Variáveis com a resolução da tela para ajustar a posição das tabelas
+width = root.winfo_screenwidth()
+height = root.winfo_screenheight()
+print("OPA")
+# Faz com que a janela principal tenha o tamanho igual a resolução
+#root.geometry("%dx%d" % (width, height))
+root.title("COMPARADOR ACCESS v1.4")
+# Maximiza a janela principal
+root.state("zoomed")
+    
 if __name__ == '__main__':
     multiprocessing.freeze_support()
 
@@ -543,17 +555,6 @@ if __name__ == '__main__':
         'T': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
         'U': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
     })
-
-    # CRIA A JANELA PRINCIPAL
-    root = tk.Tk()
-    # Variáveis com a resolução da tela para ajustar a posição das tabelas
-    width = root.winfo_screenwidth()
-    height = root.winfo_screenheight()
-    # Faz com que a janela principal tenha o tamanho igual a resolução
-    root.geometry("%dx%d" % (width, height))
-    root.title("COMPARADOR ACCESS v1.4")
-    # Maximiza a janela principal
-    root.state("zoomed")
 
 
     def unfilter():
@@ -1201,10 +1202,10 @@ if __name__ == '__main__':
     #scroll.pack(side=RIGHT, fill=tk.Y)
     
     canvas1 = tk.Canvas(tab1, width=width, height=height)
-    scroll = tk.Scrollbar(tab1, command=canvas1.yview)
-    canvas1.config(yscrollcommand=scroll.set, scrollregion=(0,0,0,1500))
+    #scroll = tk.Scrollbar(tab1, command=canvas1.yview)
+    #canvas1.config(yscrollcommand=scroll.set, scrollregion=(0,0,0,1500))
     canvas1.place(x=0, y=0, height=height, width=width)
-    scroll.place(x=width-20, y=0, height=height, width=16)
+    #scroll.place(x=width-20, y=0, height=height, width=16)
 
     # Adiciona o frame da tabela antiga na aba 'arquivo antigo'
     frameOne = Frame(canvas1, width=width, height=450)
@@ -1239,7 +1240,7 @@ if __name__ == '__main__':
     # Adiciona um frame para exibir as linhas discrepantes
     frame_resul_discrep = tk.Frame(frameOne)
     frame_resul_discrep.place(x=0, y=20,
-                              height=(height/4.5), width=width-30)
+                              height=(height/4.5), width=width)
     pt_resul_discrep = Table(frame_resul_discrep)
     pt_resul_discrep.model.df = df
     options = {
@@ -1261,7 +1262,7 @@ if __name__ == '__main__':
     # Adiciona um frame para exibir as linhas novas
     frame_resul_novas = tk.Frame(frameOne)
     frame_resul_novas.place(x=0, y=(height/4.5)+25+25,
-                            height=(height/4.5), width=width-30)
+                            height=(height/4.5), width=width)
     pt_resul_novas = Table(frame_resul_novas)
     pt_resul_novas.model.df = df
     options = {
@@ -1283,7 +1284,7 @@ if __name__ == '__main__':
     # Adiciona um frame para exibir as linhas excluidas
     frame_resul_excluidas = tk.Frame(frameOne)
     frame_resul_excluidas.place(x=0, y=(height/4.5)*2+25+25+30,
-                                height=(height/4.5), width=width-30)
+                                height=(height/4.5), width=width)
     pt_resul_excluidas = Table(frame_resul_excluidas)
 
     pt_resul_excluidas.model.df = df
@@ -1307,13 +1308,23 @@ if __name__ == '__main__':
     def resize(event):
         global width, height
         global scroll,canvas1
-        if (width != event.width) and (height != event.height):
-            print("here")
+        if (width != root.winfo_width()) and (height != root.winfo_width()):
+            #print("here")
             width = event.width
             height = event.height
-            scroll.place(x=width-20, y=0, height=height, width=16)
-            print(f"The width of Toplevel is {width} and the height of Toplevel "
-                  f"is {height}")
+            frame_resul_discrep.place(x=0, y=20,
+                                      height=(height/3.9), width=width)
+            lbl_discrep.place(x=0, y=0, height=22, width=width-30)
+            frame_resul_novas.place(x=0, y=(height/3.9)+25+25,
+                                    height=(height/3.9), width=width)
+            lbl_novas.place(x=0, y=(height/3.9)+25,
+                            height=22, width=width-30)
+            frame_resul_excluidas.place(x=0, y=(height/3.9)*2+25+25+30,
+                                        height=(height/3.9), width=width)
+            lbl_excluidas.place(x=0, y=((height/3.9)*2+25+30), height=22, width=width-400)
+            #scroll.place(x=width-20, y=0, height=height, width=16)
+            #print(f"The width of Toplevel is {width} and the height of Toplevel "
+            #      f"is {height}")
             
     root.bind("<Configure>", resize)
     # Loop janela principal
