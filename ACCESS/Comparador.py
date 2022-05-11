@@ -14,7 +14,7 @@
 # FEITO Verificar se a tabela existe nos dois bancos
 # FEITO Verificar se o arquivo novo e antigo não é o mesmo
 # FEITO Arrumar a exportação do relatório
-# Fazer uma logica de resize e move
+# FEITO Fazer uma logica de resize e move
 
 import subprocess
 import pandas as pd
@@ -496,8 +496,8 @@ root = tk.Tk()
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 # Faz com que a janela principal tenha o tamanho igual a resolução
-# root.geometry("%dx%d" % (width, height))
-root.title("COMPARADOR ACCESS v1.4")
+root.geometry("%dx%d" % (width, height))
+root.title("COMPARADOR ACCESS v1.5")
 # Maximiza a janela principal
 root.state("zoomed")
 
@@ -1228,7 +1228,7 @@ if __name__ == '__main__':
     pt2.autoResizeColumns()
     pt2.autoResizeColumns()
     pt2.redraw()
-
+    factor = 3.3
     # Label das linhas discrepantes
     lbl_discrep = ttk.Label(frameOne, text="LINHAS DISCREPANTES:",
                             font='Helvetica 12 bold')
@@ -1237,7 +1237,7 @@ if __name__ == '__main__':
     # Adiciona um frame para exibir as linhas discrepantes
     frame_resul_discrep = tk.Frame(frameOne)
     frame_resul_discrep.place(x=0, y=20,
-                              height=(height/4.5), width=width)
+                              height=(height/factor)-(22*3), width=width)
     pt_resul_discrep = Table(frame_resul_discrep)
     pt_resul_discrep.model.df = df
     options = {
@@ -1253,13 +1253,13 @@ if __name__ == '__main__':
     lbl_novas = ttk.Label(frameOne, text="LINHAS ADICIONADAS "
                           "(presentes somente no arquivo novo):",
                           font='Helvetica 12 bold')
-    lbl_novas.place(x=0, y=(height/4.5)+25,
-                    height=22, width=width-30)
+    lbl_novas.place(x=0, y=(height/factor)+25-(22*3),
+                    height=22, width=width)
 
     # Adiciona um frame para exibir as linhas novas
     frame_resul_novas = tk.Frame(frameOne)
-    frame_resul_novas.place(x=0, y=(height/4.5)+25+25,
-                            height=(height/4.5), width=width)
+    frame_resul_novas.place(x=0, y=(height/factor)+25+25-(22*3),
+                            height=(height/factor)-(22*3), width=width)
     pt_resul_novas = Table(frame_resul_novas)
     pt_resul_novas.model.df = df
     options = {
@@ -1276,13 +1276,14 @@ if __name__ == '__main__':
                               text="LINHAS EXCLUIDAS "
                               "(presentes somente no arquivo antigo):",
                               font='Helvetica 12 bold')
-    lbl_excluidas.place(x=0, y=((height/4.5)*2+25+30),
-                        height=22, width=width-400)
+    lbl_excluidas.place(x=0, y=((height/factor)*2+25+30)-(22*3*2),
+                        height=22, width=width)
 
     # Adiciona um frame para exibir as linhas excluidas
     frame_resul_excluidas = tk.Frame(frameOne)
-    frame_resul_excluidas.place(x=0, y=(height/4.5)*2+25+25+30,
-                                height=(height/4.5), width=width)
+    frame_resul_excluidas.place(x=0, y=(height/factor)*2+25+25+30-(22*3*2),
+                                height=(height/factor)-(22*3), width=width)
+
     pt_resul_excluidas = Table(frame_resul_excluidas)
 
     pt_resul_excluidas.model.df = df
@@ -1309,17 +1310,24 @@ if __name__ == '__main__':
             # print("here")
             width = event.width
             height = event.height
+            factor = 2.95
+            lbl_discrep.place(x=0, y=0, height=22, width=width)
             frame_resul_discrep.place(x=0, y=20,
-                                      height=(height/3.9), width=width)
-            lbl_discrep.place(x=0, y=0, height=22, width=width-30)
-            frame_resul_novas.place(x=0, y=(height/3.9)+25+25,
-                                    height=(height/3.9), width=width)
-            lbl_novas.place(x=0, y=(height/3.9)+25,
-                            height=22, width=width-30)
-            frame_resul_excluidas.place(x=0, y=(height/3.9)*2+25+25+30,
-                                        height=(height/3.9), width=width)
-            lbl_excluidas.place(x=0, y=((height/3.9)*2+25+30),
-                                height=22, width=width-30)
+                                      height=(height/factor)-(22*3),
+                                      width=width)
+
+            lbl_novas.place(x=0, y=(height/factor)+25-(22*3),
+                            height=22, width=width)
+            frame_resul_novas.place(x=0, y=(height/factor)+25+25-(22*3),
+                                    height=(height/factor)-(22*3), width=width)
+
+            lbl_excluidas.place(x=0, y=((height/factor)*2+25+30)-(22*3*2),
+                                height=22, width=width)
+            frame_resul_excluidas.place(x=0,
+                                        y=(height/factor)*2+25+25+30-(22*3*2),
+                                        height=(height/factor)-(22*3),
+                                        width=width)
+
             # scroll.place(x=width-20, y=0, height=height, width=16)
             # print(
             # f"The width of Toplevel is {width} and the height of Toplevel "
