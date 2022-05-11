@@ -489,14 +489,12 @@ def compara():
 ###########################################################
 ###########################################################
 ###########################################################
-print("AAAAAAAAAAAAAAA")
 
 # CRIA A JANELA PRINCIPAL
 root = tk.Tk()
 # Variáveis com a resolução da tela para ajustar a posição das tabelas
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
-print("OPA")
 # Faz com que a janela principal tenha o tamanho igual a resolução
 #root.geometry("%dx%d" % (width, height))
 root.title("COMPARADOR ACCESS v1.4")
