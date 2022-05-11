@@ -496,11 +496,11 @@ root = tk.Tk()
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 # Faz com que a janela principal tenha o tamanho igual a resolução
-#root.geometry("%dx%d" % (width, height))
+# root.geometry("%dx%d" % (width, height))
 root.title("COMPARADOR ACCESS v1.4")
 # Maximiza a janela principal
 root.state("zoomed")
-    
+
 if __name__ == '__main__':
     multiprocessing.freeze_support()
 
@@ -554,7 +554,6 @@ if __name__ == '__main__':
         'U': ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
     })
 
-
     def unfilter():
         btn.place_forget()
         label3.place_forget()
@@ -602,7 +601,7 @@ if __name__ == '__main__':
         label3.place(x=width-200, y=50, height=20, width=200)
 
     def find():
-        
+
         if table1.empty or table2.empty:
             messagebox.showinfo(
                 "ERRO", "Banco de dados não selecionados")
@@ -621,16 +620,16 @@ if __name__ == '__main__':
             modu = Entry(Frm)
             modu.place(x=10, y=30, height=30, width=200)
             modu.focus_set()
-    
+
             buttn = ttk.Button(Frm, text='FILTRAR')
             buttn.place(x=450/2-40, y=70, height=35, width=80)
             # Create Label in Mainwindow and Childwindow
             label_child = Label(child_w, text="Pesquisar por:")
             label_child.place(x=10+200/2-40, y=0, height=20, width=80)
-    
+
             label_child2 = Label(child_w, text="Nos campos:")
             label_child2.place(x=450/2+80, y=0, height=20, width=80)
-    
+
             selected = tk.StringVar()
             c2_cb = ttk.Combobox(child_w, width=50, textvariable=selected)
             c2_cb['values'] = colunas_pesquisar
@@ -638,7 +637,7 @@ if __name__ == '__main__':
             c2_cb.pack(fill=tk.X, padx=5, pady=5)
             c2_cb.place(x=450/2+15, y=30, height=30, width=200)
             # c2_cb.current(0)
-    
+
             def xx():
                 global texto_pesquisa
                 global campo_pesquisa
@@ -646,7 +645,7 @@ if __name__ == '__main__':
                 campo_pesquisa = selected.get()
                 child_w.destroy()
                 filtra()
-    
+
             buttn.config(command=xx)
 
     def select_campos():
@@ -1188,27 +1187,28 @@ if __name__ == '__main__':
     tabControl.add(tab1, text='RELATÓRIO')
     tabControl.add(tab2, text='ARQUIVO ANTIGO')
     tabControl.add(tab3, text='ARQUIVO NOVO')
-    
-  #  from tkinter import BOTH, LEFT,RIGHT
-   # container = Frame(tabControl)
-   # container.place(x=0, y=100, height=height, width=width)
-   # canvas = tk.Canvas(container, width=width, height=height)
-   # canvas.place(x=0, y=70, height=height, width=width)
-    #scroll = tk.Scrollbar(container, command=canvas.yview)
-    #canvas.config(yscrollcommand=scroll.set, scrollregion=(0,0,100,1000))
-    #canvas.pack(side=LEFT, fill=BOTH, expand=True)
-    #scroll.pack(side=RIGHT, fill=tk.Y)
-    
+
+    #  from tkinter import BOTH, LEFT,RIGHT
+    # container = Frame(tabControl)
+    # container.place(x=0, y=100, height=height, width=width)
+    # canvas = tk.Canvas(container, width=width, height=height)
+    # canvas.place(x=0, y=70, height=height, width=width)
+    # scroll = tk.Scrollbar(container, command=canvas.yview)
+    # canvas.config(yscrollcommand=scroll.set, scrollregion=(0,0,100,1000))
+    # canvas.pack(side=LEFT, fill=BOTH, expand=True)
+    # scroll.pack(side=RIGHT, fill=tk.Y)
+
     canvas1 = tk.Canvas(tab1, width=width, height=height)
-    #scroll = tk.Scrollbar(tab1, command=canvas1.yview)
-    #canvas1.config(yscrollcommand=scroll.set, scrollregion=(0,0,0,1500))
+    # scroll = tk.Scrollbar(tab1, command=canvas1.yview)
+    # canvas1.config(yscrollcommand=scroll.set, scrollregion=(0,0,0,1500))
     canvas1.place(x=0, y=0, height=height, width=width)
-    #scroll.place(x=width-20, y=0, height=height, width=16)
+    # scroll.place(x=width-20, y=0, height=height, width=16)
 
     # Adiciona o frame da tabela antiga na aba 'arquivo antigo'
     frameOne = Frame(canvas1, width=width, height=450)
-    canvas1.create_window(0, 0,anchor=tk.NW, window=frameOne, width=width, height=height)
-    
+    canvas1.create_window(0, 0, anchor=tk.NW,
+                          window=frameOne, width=width, height=height)
+
     frame1 = tk.Frame(tab2)
     frame1.place(x=0, y=0, height=height-178, width=width)
     pt1 = Table(frame1)
@@ -1228,7 +1228,6 @@ if __name__ == '__main__':
     pt2.autoResizeColumns()
     pt2.autoResizeColumns()
     pt2.redraw()
-    
 
     # Label das linhas discrepantes
     lbl_discrep = ttk.Label(frameOne, text="LINHAS DISCREPANTES:",
@@ -1277,7 +1276,8 @@ if __name__ == '__main__':
                               text="LINHAS EXCLUIDAS "
                               "(presentes somente no arquivo antigo):",
                               font='Helvetica 12 bold')
-    lbl_excluidas.place(x=0, y=((height/4.5)*2+25+30), height=22, width=width-400)
+    lbl_excluidas.place(x=0, y=((height/4.5)*2+25+30),
+                        height=22, width=width-400)
 
     # Adiciona um frame para exibir as linhas excluidas
     frame_resul_excluidas = tk.Frame(frameOne)
@@ -1301,13 +1301,12 @@ if __name__ == '__main__':
 
     image_path = resource_path("icone.ico")
     root.iconbitmap(image_path)
-    
 
     def resize(event):
         global width, height
-        global scroll,canvas1
+        global scroll, canvas1
         if (width != root.winfo_width()) and (height != root.winfo_width()):
-            #print("here")
+            # print("here")
             width = event.width
             height = event.height
             frame_resul_discrep.place(x=0, y=20,
@@ -1319,11 +1318,13 @@ if __name__ == '__main__':
                             height=22, width=width-30)
             frame_resul_excluidas.place(x=0, y=(height/3.9)*2+25+25+30,
                                         height=(height/3.9), width=width)
-            lbl_excluidas.place(x=0, y=((height/3.9)*2+25+30), height=22, width=width-400)
-            #scroll.place(x=width-20, y=0, height=height, width=16)
-            #print(f"The width of Toplevel is {width} and the height of Toplevel "
+            lbl_excluidas.place(x=0, y=((height/3.9)*2+25+30),
+                                height=22, width=width-400)
+            # scroll.place(x=width-20, y=0, height=height, width=16)
+            # print(
+            # f"The width of Toplevel is {width} and the height of Toplevel "
             #      f"is {height}")
-            
+
     root.bind("<Configure>", resize)
     # Loop janela principal
     root.mainloop()
