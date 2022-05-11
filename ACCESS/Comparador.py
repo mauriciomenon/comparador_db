@@ -497,16 +497,18 @@ if __name__ == '__main__':
     def myinfo():
         # Função que mostra as informações do algoritmo
         str_info = "Autor: Rafael Henrique da Rosa\n"
+        str_info += "Supervisor: Mauricio Menon\n"
         str_info += "Estagiário Itaipu Binacional- SMIN.DT - Abril de 2022\n"
         str_info += "O algoritmo compara duas tabelas em arquivos access "
-        str_info += "excluidas, novas e discrepantes"
+        str_info += "e exibe linhas "
+        str_info += "excluidas, novas e discrepantes."
 
         messagebox.showinfo("Info", str_info)
 
     def show_tutorial():
         # Função que exibe um pequeno tutorial
         # Abre o arquivo 'tutorial.txt' que deve estar na pasta do algoritmo
-        f = open("tutorial.txt", "rt", encoding='utf-8')
+        f = open(resource_path("tutorial.txt"), "rt", encoding='utf-8')
         x = f.read()
         # Mostra o conteudo do arquivo em uma messagebox
         messagebox.showinfo("Info", x)
@@ -543,7 +545,6 @@ if __name__ == '__main__':
     })
 
     # CRIA A JANELA PRINCIPAL
-
     root = tk.Tk()
     # Variáveis com a resolução da tela para ajustar a posição das tabelas
     width = root.winfo_screenwidth()
@@ -553,6 +554,7 @@ if __name__ == '__main__':
     root.title("COMPARADOR ACCESS v1.4")
     # Maximiza a janela principal
     root.state("zoomed")
+
 
     def unfilter():
         btn.place_forget()
@@ -601,48 +603,52 @@ if __name__ == '__main__':
         label3.place(x=width-200, y=50, height=20, width=200)
 
     def find():
-
-        colunas_pesquisar = colunas
-        colunas_pesquisar.pop(0)
-        # colunas_pesquisar.insert(0, "TODOS")
-        child_w = Toplevel(root)
-        child_w.geometry("450x110")
-        child_w.grab_set()
-        child_w.title("FILTRAGEM")
-        Frm = Frame(child_w)
-        Label(Frm, text='Enter Word to Find:')
-        # Label.place(x=0, y=50, height=250, width=750)
-        Frm.place(x=0, y=0, height=110, width=450)
-        modu = Entry(Frm)
-        modu.place(x=10, y=30, height=30, width=200)
-        modu.focus_set()
-
-        buttn = ttk.Button(Frm, text='FILTRAR')
-        buttn.place(x=450/2-40, y=70, height=35, width=80)
-        # Create Label in Mainwindow and Childwindow
-        label_child = Label(child_w, text="Pesquisar por:")
-        label_child.place(x=10+200/2-40, y=0, height=20, width=80)
-
-        label_child2 = Label(child_w, text="Nos campos:")
-        label_child2.place(x=450/2+80, y=0, height=20, width=80)
-
-        selected = tk.StringVar()
-        c2_cb = ttk.Combobox(child_w, width=50, textvariable=selected)
-        c2_cb['values'] = colunas_pesquisar
-        c2_cb['state'] = 'readonly'
-        c2_cb.pack(fill=tk.X, padx=5, pady=5)
-        c2_cb.place(x=450/2+15, y=30, height=30, width=200)
-        # c2_cb.current(0)
-
-        def xx():
-            global texto_pesquisa
-            global campo_pesquisa
-            texto_pesquisa = modu.get()
-            campo_pesquisa = selected.get()
-            child_w.destroy()
-            filtra()
-
-        buttn.config(command=xx)
+        
+        if table1.empty or table2.empty:
+            messagebox.showinfo(
+                "ERRO", "Banco de dados não selecionados")
+        else:
+            colunas_pesquisar = colunas
+            colunas_pesquisar.pop(0)
+            # colunas_pesquisar.insert(0, "TODOS")
+            child_w = Toplevel(root)
+            child_w.geometry("450x110")
+            child_w.grab_set()
+            child_w.title("FILTRAGEM")
+            Frm = Frame(child_w)
+            Label(Frm, text='Enter Word to Find:')
+            # Label.place(x=0, y=50, height=250, width=750)
+            Frm.place(x=0, y=0, height=110, width=450)
+            modu = Entry(Frm)
+            modu.place(x=10, y=30, height=30, width=200)
+            modu.focus_set()
+    
+            buttn = ttk.Button(Frm, text='FILTRAR')
+            buttn.place(x=450/2-40, y=70, height=35, width=80)
+            # Create Label in Mainwindow and Childwindow
+            label_child = Label(child_w, text="Pesquisar por:")
+            label_child.place(x=10+200/2-40, y=0, height=20, width=80)
+    
+            label_child2 = Label(child_w, text="Nos campos:")
+            label_child2.place(x=450/2+80, y=0, height=20, width=80)
+    
+            selected = tk.StringVar()
+            c2_cb = ttk.Combobox(child_w, width=50, textvariable=selected)
+            c2_cb['values'] = colunas_pesquisar
+            c2_cb['state'] = 'readonly'
+            c2_cb.pack(fill=tk.X, padx=5, pady=5)
+            c2_cb.place(x=450/2+15, y=30, height=30, width=200)
+            # c2_cb.current(0)
+    
+            def xx():
+                global texto_pesquisa
+                global campo_pesquisa
+                texto_pesquisa = modu.get()
+                campo_pesquisa = selected.get()
+                child_w.destroy()
+                filtra()
+    
+            buttn.config(command=xx)
 
     def select_campos():
         global campos
@@ -1144,11 +1150,11 @@ if __name__ == '__main__':
     menubar = tk.Menu(root)
 
     filemenu = tk.Menu(menubar, tearoff=0)
-    filemenu.add_command(label="SELECIONAR ARQUIVO ACCESS (.accdb)",
+    filemenu.add_command(label="Selecionar Arquivo Access (.accdb)",
                          command=select_file_access)
-    filemenu.add_command(label="SELECIONAR ARQUIVO EXCEL (.xlsx)",
+    filemenu.add_command(label="Selecionar Arquivo Excel (.xlsx)",
                          command=select_file_excel)
-    filemenu.add_command(label="SAIR", command=close_root)
+    filemenu.add_command(label="Sair", command=close_root)
     helpmenu = tk.Menu(menubar, tearoff=0)
     helpmenu.add_command(label="Como usar", command=show_tutorial)
     helpmenu.add_command(label="Sobre o programa", command=myinfo)
@@ -1183,8 +1189,27 @@ if __name__ == '__main__':
     tabControl.add(tab1, text='RELATÓRIO')
     tabControl.add(tab2, text='ARQUIVO ANTIGO')
     tabControl.add(tab3, text='ARQUIVO NOVO')
+    
+  #  from tkinter import BOTH, LEFT,RIGHT
+   # container = Frame(tabControl)
+   # container.place(x=0, y=100, height=height, width=width)
+   # canvas = tk.Canvas(container, width=width, height=height)
+   # canvas.place(x=0, y=70, height=height, width=width)
+    #scroll = tk.Scrollbar(container, command=canvas.yview)
+    #canvas.config(yscrollcommand=scroll.set, scrollregion=(0,0,100,1000))
+    #canvas.pack(side=LEFT, fill=BOTH, expand=True)
+    #scroll.pack(side=RIGHT, fill=tk.Y)
+    
+    canvas1 = tk.Canvas(tab1, width=width, height=height)
+    scroll = tk.Scrollbar(tab1, command=canvas1.yview)
+    canvas1.config(yscrollcommand=scroll.set, scrollregion=(0,0,0,1500))
+    canvas1.place(x=0, y=0, height=height, width=width)
+    scroll.place(x=width-20, y=0, height=height, width=16)
 
     # Adiciona o frame da tabela antiga na aba 'arquivo antigo'
+    frameOne = Frame(canvas1, width=width, height=450)
+    canvas1.create_window(0, 0,anchor=tk.NW, window=frameOne, width=width, height=height)
+    
     frame1 = tk.Frame(tab2)
     frame1.place(x=0, y=0, height=height-178, width=width)
     pt1 = Table(frame1)
@@ -1204,16 +1229,17 @@ if __name__ == '__main__':
     pt2.autoResizeColumns()
     pt2.autoResizeColumns()
     pt2.redraw()
+    
 
     # Label das linhas discrepantes
-    lbl_discrep = ttk.Label(tab1, text="LINHAS DISCREPANTES:",
+    lbl_discrep = ttk.Label(frameOne, text="LINHAS DISCREPANTES:",
                             font='Helvetica 12 bold')
-    lbl_discrep.place(x=0, y=0, height=22, width=width)
+    lbl_discrep.place(x=0, y=0, height=22, width=width-30)
 
     # Adiciona um frame para exibir as linhas discrepantes
-    frame_resul_discrep = tk.Frame(tab1)
+    frame_resul_discrep = tk.Frame(frameOne)
     frame_resul_discrep.place(x=0, y=20,
-                              height=(height/4.5), width=width)
+                              height=(height/4.5), width=width-30)
     pt_resul_discrep = Table(frame_resul_discrep)
     pt_resul_discrep.model.df = df
     options = {
@@ -1226,16 +1252,16 @@ if __name__ == '__main__':
     pt_resul_discrep.redraw()
 
     # Label das linhas novas
-    lbl_novas = ttk.Label(tab1, text="LINHAS ADICIONADAS "
+    lbl_novas = ttk.Label(frameOne, text="LINHAS ADICIONADAS "
                           "(presentes somente no arquivo novo):",
                           font='Helvetica 12 bold')
     lbl_novas.place(x=0, y=(height/4.5)+25,
-                    height=22, width=width)
+                    height=22, width=width-30)
 
     # Adiciona um frame para exibir as linhas novas
-    frame_resul_novas = tk.Frame(tab1)
+    frame_resul_novas = tk.Frame(frameOne)
     frame_resul_novas.place(x=0, y=(height/4.5)+25+25,
-                            height=(height/4.5), width=width)
+                            height=(height/4.5), width=width-30)
     pt_resul_novas = Table(frame_resul_novas)
     pt_resul_novas.model.df = df
     options = {
@@ -1248,16 +1274,16 @@ if __name__ == '__main__':
     pt_resul_novas.redraw()
 
     # Label das linhas excluidas
-    lbl_excluidas = ttk.Label(tab1,
+    lbl_excluidas = ttk.Label(frameOne,
                               text="LINHAS EXCLUIDAS "
                               "(presentes somente no arquivo antigo):",
                               font='Helvetica 12 bold')
-    lbl_excluidas.place(x=0, y=((height/4.5)*2+25+30), height=22, width=width)
+    lbl_excluidas.place(x=0, y=((height/4.5)*2+25+30), height=22, width=width-400)
 
     # Adiciona um frame para exibir as linhas excluidas
-    frame_resul_excluidas = tk.Frame(tab1)
+    frame_resul_excluidas = tk.Frame(frameOne)
     frame_resul_excluidas.place(x=0, y=(height/4.5)*2+25+25+30,
-                                height=(height/4.5), width=width)
+                                height=(height/4.5), width=width-30)
     pt_resul_excluidas = Table(frame_resul_excluidas)
 
     pt_resul_excluidas.model.df = df
@@ -1272,25 +1298,23 @@ if __name__ == '__main__':
     pt_resul_excluidas.show()
     pt_resul_excluidas.redraw()
 
-    # Comando quando a janela é fechada
-    window_width, window_height = 0, 0
-
-
-    
-    def resize(event):
-        global width, height
-       # if event.widget.widgetName == "toplevel":
-        if (width != event.width) and (height != event.height):
-            width, height = event.width,event.height
-            print(f"The width of Toplevel is {window_width} and the height of Toplevel "
-                  f"is {window_height}")
-            root.update()
-            
-    root.bind("<Configure>", resize)
-     
     root.protocol("WM_DELETE_WINDOW", close_root)
 
     image_path = resource_path("icone.ico")
     root.iconbitmap(image_path)
+    
+
+    def resize(event):
+        global width, height
+        global scroll,canvas1
+        if (width != event.width) and (height != event.height):
+            print("here")
+            width = event.width
+            height = event.height
+            scroll.place(x=width-20, y=0, height=height, width=16)
+            print(f"The width of Toplevel is {width} and the height of Toplevel "
+                  f"is {height}")
+            
+    root.bind("<Configure>", resize)
     # Loop janela principal
     root.mainloop()
