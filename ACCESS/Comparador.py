@@ -1328,6 +1328,8 @@ if __name__ == '__main__':
                                         height=(height/factor)-(22*3),
                                         width=width)
 
+            frame1.place(x=0, y=0, height=height-100, width=width)
+            frame2.place(x=0, y=0, height=height-100, width=width)
             # scroll.place(x=width-20, y=0, height=height, width=16)
             # print(
             # f"The width of Toplevel is {width} and the height of Toplevel "
