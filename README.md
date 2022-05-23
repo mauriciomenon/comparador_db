@@ -30,6 +30,9 @@ O programa abre a janela principal em tela cheia, ao mudar suas dimensões ou mu
 
 ![alt text](https://github.com/Rafaelh531/Comparador/blob/main/GUI.PNG?raw=true)
 
+
+DOWNLOAD .exe V1.5 (42Mb): https://drive.google.com/file/d/1-phndCODD8gRbn0LDHusszpRHAW1FQ4F/view?usp=sharing
+
 ### Pacotes necessários:
 `$ pip install subprocess`<br />
 `$ pip install pandas`<br />
