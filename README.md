@@ -24,6 +24,8 @@ O programa é capaz de exportar as tabelas carregadas e o relatório dos resulta
 Para ajuda de como o programa funciona existe um tutorial presente no menu 'ajuda'.<br />
 No menu opções existe a possibilidade de mudar a cor das células que possuem valores discrepantes e a localização das ocorrências nas abas das tabelas originais, entretanto essa opção aumenta consideravelmente o tempo de compilação (principalmente em tabelas grandes com muitas ocorrências) devido a iteração nos dataframes.
 Para inúmeras ocorrências existe um bug no visualizador do pacote pandastable onde as células são marcadas incorretamente após realizar uma rolagem pela tabela.<br />
+A ferramenta possui uma opção de busca onde é possível selecionar um termo em uma coluna para filtrar as tabelas, o termo buscado aparece no canto superior direito, onde pode ser removido.<br />
+O programa abre a janela principal em tela cheia, ao mudar suas dimensões ou mudar de monitor os itens são atualizados tentando manter as proporções originais. É possível que em janelas pequenas algumas opções fiquem inacessíveis.<br />
 
 ### Pacotes necessários:
 `$ pip install subprocess`<br />
