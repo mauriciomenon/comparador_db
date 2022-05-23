@@ -27,6 +27,9 @@ Para inúmeras ocorrências existe um bug no visualizador do pacote pandastable 
 A ferramenta possui uma opção de busca onde é possível selecionar um termo em uma coluna para filtrar as tabelas, o termo buscado aparece no canto superior direito, onde pode ser removido.<br />
 O programa abre a janela principal em tela cheia, ao mudar suas dimensões ou mudar de monitor os itens são atualizados tentando manter as proporções originais. É possível que em janelas pequenas algumas opções fiquem inacessíveis.<br />
 
+
+![alt text](https://github.com/Rafaelh531/Comparador/blob/main/GUI.PNG?raw=true)
+
 ### Pacotes necessários:
 `$ pip install subprocess`<br />
 `$ pip install pandas`<br />
