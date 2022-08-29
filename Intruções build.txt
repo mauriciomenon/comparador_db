@@ -1,0 +1,55 @@
+1° - Instalar pacote pyinstaller
+2° - Executar o arquivo "ComparadorAccess.py" e realizar um teste para verificar se todos os pacotes necessários estão instalados
+2° - Criar o arquivo "ComparadorAccess.spec" com o notepad
+3° - Colar o seguinte no arquivo:
+
+# -*- mode: python ; coding: utf-8 -*-
+
+
+block_cipher = None
+
+
+a = Analysis(
+    ['C:/Users/rafa6899/Downloads/COMPARADOR V1.5.1/src/ComparadorAccess.py'],
+    pathex=[],
+    binaries=[],
+    datas=[('C:/Users/rafa6899/Downloads/COMPARADOR V1.5.1/src/mdbtools', 'mdbtools/'), ('C:/Users/rafa6899/Downloads/COMPARADOR V1.5.1/src/icone.ico', '.')],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='ComparadorAccess',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon='C:\\Users\\rafa6899\\Downloads\\COMPARADOR V1.5.1\\src\\icone.ico',
+)
+
+4° - Substituir a variável 'datas' com o caminho da pasta mdb-tools
+5° - Substituir o caminho para o icone
+6° - Executar o comando "pyinstaller ComparadorAccess.spec"
+7° - O executável fica guardado na pasta 'dist'
