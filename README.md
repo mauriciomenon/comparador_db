@@ -1,3 +1,5 @@
-# Priv_Comparador_Fork
+# Comparador DB (comparador_db)
 
-Fork independente de [Priv_Comparador](https://github.com/Rafaelh531/Priv_Comparador.git)
+Este é um fork independente do repositório privado original [Priv_Comparador](https://github.com/Rafaelh531/Priv_Comparador.git).
+
+Repositório Original (privado): https://github.com/Rafaelh531/Priv_Comparador.git
